@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import ContactMessage, StudyTourBooking
+from .models import ContactMessage, StudyTourBooking, CustomTripRequest
 import re
 
 class CustomUserCreationForm(UserCreationForm):
@@ -134,4 +134,20 @@ class ContactMessageForm(forms.ModelForm):
                 'placeholder': 'Tell us about your inquiry...',
                 'required': True
             }),
+        }
+
+class CustomTripRequestForm(forms.ModelForm):
+    class Meta:
+        model = CustomTripRequest
+        fields = ['full_name', 'email', 'phone', 'destination', 'travel_date', 'duration_days', 'num_persons', 'budget_range', 'additional_details']
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name', 'required': True}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': True}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number', 'required': True}),
+            'destination': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Where do you want to go?', 'required': True}),
+            'travel_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'duration_days': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Days', 'min': 1}),
+            'num_persons': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Number of Persons', 'min': 1}),
+            'budget_range': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Budget Range (e.g. 5000-10000)'}),
+            'additional_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe your plan, specific places, or requirements...'}),
         }

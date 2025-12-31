@@ -5,62 +5,35 @@
 
 {% block content %}
 <section class="admin-bookings-section" style="padding: 40px 20px; max-width: 1400px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
-        <h1 style="color: var(--dark); margin: 0;">
-            <i class="fas fa-tasks"></i> Package Booking Requests
-        </h1>
-        <a href="{% url 'packages' %}" style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500;">
-            <i class="fas fa-arrow-left"></i> Back to Packages
-        </a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="color: var(--dark); margin: 0;">Package Booking Requests</h1>
+        <a href="{% url 'packages' %}" style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Back to Packages</a>
     </div>
-    
-    {% if messages %}
-    <div style="max-width: 800px; margin: 0 auto 20px;">
-        {% for message in messages %}
-        <div class="alert" style="padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; {% if message.tags == 'success' %}background: #d4edda; color: #155724; border: 1px solid #c3e6cb;{% elif message.tags == 'error' %}background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;{% else %}background: #fff3cd; color: #856404; border: 1px solid #ffeeba;{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    
-    <!-- Stats Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
         <div style="background: #ffc107; color: #333; padding: 25px; border-radius: 12px; text-align: center;">
-            <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 10px;"></i>
             <h3 style="margin: 0; font-size: 2.5rem;">{{ pending_count }}</h3>
             <p style="margin: 5px 0 0;">Pending</p>
         </div>
         <div style="background: var(--primary); color: white; padding: 25px; border-radius: 12px; text-align: center;">
-            <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
             <h3 style="margin: 0; font-size: 2.5rem;">{{ approved_count }}</h3>
             <p style="margin: 5px 0 0;">Approved</p>
         </div>
         <div style="background: #dc3545; color: white; padding: 25px; border-radius: 12px; text-align: center;">
-            <i class="fas fa-times-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
             <h3 style="margin: 0; font-size: 2.5rem;">{{ rejected_count }}</h3>
             <p style="margin: 5px 0 0;">Rejected</p>
         </div>
     </div>
-    
-    <!-- Filter Tabs -->
-    <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
-        <a href="?status=all" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; font-weight: 500; {% if status_filter == 'all' %}background: var(--dark); color: white;{% else %}background: #e9ecef; color: #333;{% endif %}">
-            All
-        </a>
-        <a href="?status=pending" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; font-weight: 500; {% if status_filter == 'pending' %}background: #ffc107; color: #333;{% else %}background: #e9ecef; color: #333;{% endif %}">
-            Pending
-        </a>
-        <a href="?status=approved" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; font-weight: 500; {% if status_filter == 'approved' %}background: var(--primary); color: white;{% else %}background: #e9ecef; color: #333;{% endif %}">
-            Approved
-        </a>
-        <a href="?status=rejected" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; font-weight: 500; {% if status_filter == 'rejected' %}background: #dc3545; color: white;{% else %}background: #e9ecef; color: #333;{% endif %}">
-            Rejected
-        </a>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+        <a href="?status=all" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; {% if status_filter == 'all' %}background: var(--dark); color: white;{% else %}background: #e9ecef; color: #333;{% endif %}">All</a>
+        <a href="?status=pending" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; {% if status_filter == 'pending' %}background: #ffc107; color: #333;{% else %}background: #e9ecef; color: #333;{% endif %}">Pending</a>
+        <a href="?status=approved" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; {% if status_filter == 'approved' %}background: var(--primary); color: white;{% else %}background: #e9ecef; color: #333;{% endif %}">Approved</a>
+        <a href="?status=rejected" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; {% if status_filter == 'rejected' %}background: #dc3545; color: white;{% else %}background: #e9ecef; color: #333;{% endif %}">Rejected</a>
     </div>
-    
+
     {% if bookings %}
-    <div class="bookings-table" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+    <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -79,88 +52,64 @@
                     <tr style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px;">
                             <strong>{{ booking.student_name }}</strong><br>
-                            <small style="color: #666;">ID: {{ booking.student_id }}</small><br>
-                            <small style="color: #666;">{{ booking.department }} - {{ booking.semester }}</small>
+                            <small>ID: {{ booking.student_id }}</small><br>
+                            <small>{{ booking.department }} - {{ booking.semester }}</small>
                         </td>
                         <td style="padding: 15px;">
                             <strong>{{ booking.package.name }}</strong><br>
-                            <small style="color: #666;">{{ booking.package.destination }}</small><br>
-                            <small style="color: var(--primary); font-weight: 600;">৳{{ booking.package.price|floatformat:0 }}</small>
+                            <small>{{ booking.package.destination }}</small><br>
+                            <small style="color: var(--primary);">BDT {{ booking.package.price }}</small>
                         </td>
                         <td style="padding: 15px;">
-                            <small><i class="fas fa-phone"></i> {{ booking.phone }}</small><br>
-                            <small><i class="fas fa-envelope"></i> {{ booking.email }}</small>
-                            {% if booking.emergency_contact %}
-                            <br><small><i class="fas fa-phone-alt"></i> {{ booking.emergency_contact }}</small>
-                            {% endif %}
+                            <small>{{ booking.phone }}</small><br>
+                            <small>{{ booking.email }}</small>
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             <span style="background: #e9ecef; padding: 5px 15px; border-radius: 20px;">{{ booking.num_persons }}</span>
                         </td>
                         <td style="padding: 15px;">
                             {% if booking.payments.all %}
-                                {% for payment in booking.payments.all %}
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                        <div>
-                                            <small style="color: #666;"><strong>Paid:</strong> ৳{{ payment.amount_paid|floatformat:2 }}</small><br>
-                                            <small style="color: #666;"><strong>bKash:</strong> ****{{ payment.bkash_last_4 }}</small>
-                                        </div>
-                                        <span style="background: {% if payment.status == 'verified' %}#d4edda{% elif payment.status == 'rejected' %}#f8d7da{% else %}#fff3cd{% endif %}; color: {% if payment.status == 'verified' %}#155724{% elif payment.status == 'rejected' %}#721c24{% else %}#856404{% endif %}; padding: 5px 10px; border-radius: 5px; font-size: 0.75rem; font-weight: 600;">
-                                            {{ payment.status|upper }}
-                                        </span>
-                                    </div>
-                                    <div style="background: #e0e0e0; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 5px;">
-                                        <div style="background: var(--primary); height: 100%; width: {{ payment.payment_percentage }}%;"></div>
-                                    </div>
-                                    <div style="display: flex; gap: 8px;">
-                                        {% if payment.status != 'verified' %}
-                                        <form action="{% url 'verify_payment' payment.id %}" method="POST" style="display: inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" style="background: var(--primary); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
-                                                <i class="fas fa-check"></i> Verify
-                                            </button>
-                                        </form>
-                                        {% endif %}
-                                        {% if payment.status != 'rejected' %}
-                                        <button type="button" onclick="showRejectModal({{ payment.id }})" style="background: #dc3545; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
-                                            <i class="fas fa-times"></i> Reject
-                                        </button>
-                                        {% endif %}
-                                    </div>
+                            {% for payment in booking.payments.all %}
+                            <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                                <small><strong>Amount:</strong> BDT {{ payment.amount_paid }}</small><br>
+                                <small><strong>bKash:</strong> ****{{ payment.bkash_last_4 }}</small><br>
+                                <span style="display: inline-block; margin-top: 5px; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; {% if payment.status == 'verified' %}background: #d4edda; color: #155724;{% elif payment.status == 'rejected' %}background: #f8d7da; color: #721c24;{% else %}background: #fff3cd; color: #856404;{% endif %}">{{ payment.status|upper }}</span>
+                                {% if payment.status == 'pending' %}
+                                <div style="display: flex; gap: 5px; margin-top: 8px;">
+                                    <form action="{% url 'verify_payment' payment.id %}" method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" style="background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;"><i class="fas fa-check"></i> Verify</button>
+                                    </form>
+                                    <form action="{% url 'reject_payment' payment.id %}" method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;"><i class="fas fa-times"></i> Reject</button>
+                                    </form>
                                 </div>
-                                {% endfor %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                             {% else %}
                             <small style="color: #999; font-style: italic;">No payment submitted</small>
                             {% endif %}
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <span style="padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; text-transform: uppercase; {% if booking.status == 'approved' %}background: #d4edda; color: #155724;{% elif booking.status == 'pending' %}background: #fff3cd; color: #856404;{% elif booking.status == 'rejected' %}background: #f8d7da; color: #721c24;{% else %}background: #e9ecef; color: #6c757d;{% endif %}">
-                                {{ booking.status }}
-                            </span>
+                            <span style="padding: 5px 15px; border-radius: 20px; {% if booking.status == 'approved' %}background: #d4edda; color: #155724;{% elif booking.status == 'pending' %}background: #fff3cd; color: #856404;{% else %}background: #f8d7da; color: #721c24;{% endif %}">{{ booking.status|upper }}</span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             {% if booking.status == 'pending' %}
-                            <div style="display: flex; gap: 8px; justify-content: center;">
-                                <a href="{% url 'approve_package_booking' booking.id %}" style="background: var(--primary); color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.85rem;">
-                                    <i class="fas fa-check"></i> Approve
-                                </a>
-                                <a href="{% url 'reject_package_booking' booking.id %}" onclick="return confirm('Are you sure you want to reject this booking?');" style="background: #dc3545; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.85rem;">
-                                    <i class="fas fa-times"></i> Reject
-                                </a>
-                            </div>
+                            <form action="{% url 'approve_package_booking' booking.id %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background: var(--primary); color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">Approve</button>
+                            </form>
+                            <form action="{% url 'reject_package_booking' booking.id %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background: #dc3545; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">Reject</button>
+                            </form>
                             {% else %}
                             <small style="color: #999;">No action needed</small>
                             {% endif %}
                         </td>
                     </tr>
-                    {% if booking.special_requests %}
-                    <tr style="background: #f8f9fa;">
-                        <td colspan="7" style="padding: 10px 15px;">
-                            <small><strong>Special Request:</strong> {{ booking.special_requests }}</small>
-                        </td>
-                    </tr>
-                    {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -168,69 +117,8 @@
     </div>
     {% else %}
     <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 15px;">
-        <i class="fas fa-inbox" style="font-size: 60px; color: #ccc; margin-bottom: 20px;"></i>
-        <h3 style="color: #666; margin-bottom: 10px;">No Bookings Found</h3>
-        <p style="color: #999;">There are no bookings matching your filter.</p>
+        <h3 style="color: #666;">No Bookings Found</h3>
     </div>
     {% endif %}
 </section>
-
-<!-- Reject Payment Modal -->
-<div id="rejectPaymentModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
-    <div style="background-color: #fff; margin: 5% auto; padding: 0; border-radius: 15px; width: 90%; max-width: 500px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);">
-        <div style="padding: 20px; background: #dc3545; color: white; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0; font-size: 1.3rem;">Reject Payment</h3>
-            <button onclick="closeRejectModal()" style="font-size: 28px; font-weight: bold; color: white; cursor: pointer; border: none; background: none;">&times;</button>
-        </div>
-        <form id="rejectPaymentForm" method="POST" style="padding: 20px;">
-            {% csrf_token %}
-            <input type="hidden" id="paymentId" name="payment_id">
-            
-            <div style="margin-bottom: 20px;">
-                <label for="adminNotes" style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">Reason for Rejection (Optional)</label>
-                <textarea id="adminNotes" name="admin_notes" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; resize: vertical;" rows="4" placeholder="Enter reason for rejection..."></textarea>
-            </div>
-            
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" onclick="closeRejectModal()" style="background: #ddd; color: #333; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancel</button>
-                <button type="submit" style="background: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Reject Payment</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-function showRejectModal(paymentId) {
-    document.getElementById('rejectPaymentModal').style.display = 'block';
-    document.getElementById('paymentId').value = paymentId;
-    document.getElementById('adminNotes').value = '';
-}
-
-function closeRejectModal() {
-    document.getElementById('rejectPaymentModal').style.display = 'none';
-}
-
-document.getElementById('rejectPaymentForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const paymentId = document.getElementById('paymentId').value;
-    const form = this;
-    
-    // Create a hidden form and submit it
-    const hiddenForm = document.createElement('form');
-    hiddenForm.method = 'POST';
-    hiddenForm.action = `/payment/reject/${paymentId}/`;
-    hiddenForm.innerHTML = form.innerHTML;
-    document.body.appendChild(hiddenForm);
-    hiddenForm.submit();
-    document.body.removeChild(hiddenForm);
-});
-
-// Close modal when clicking outside of it
-window.onclick = function(event) {
-    const modal = document.getElementById('rejectPaymentModal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-}
-</script>
 {% endblock %}

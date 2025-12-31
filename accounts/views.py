@@ -4,11 +4,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.views import LoginView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
-from .forms import CustomUserCreationForm, ContactMessageForm
-from .models import StudyTour, TourDate, TourInclusion, StudyTourBooking, ContactMessage
+from django.db import OperationalError
+from .forms import CustomUserCreationForm, ContactMessageForm, CustomTripRequestForm
+from .models import StudyTour, TourDate, TourInclusion, StudyTourBooking, ContactMessage, CustomTripRequest
+from tourist_spots.models import TouristSpot, TourPackage, PackageBooking, Payment
+from tourist_spots.forms import TouristSpotForm, TourPackageForm, PackageBookingForm
 
 # Custom Login View
 class CustomLoginView(LoginView):
@@ -48,52 +51,110 @@ def register(request):
 
 # Basic Page Views
 def home(request):
-    """Home page view"""
-    return render(request, 'home.html')
+    """Home page view with tourist spots"""
+    try:
+        spots = TouristSpot.objects.all()
+    except OperationalError:
+        spots = []
+        messages.warning(request, "Database is being set up. Please wait a moment and refresh.")
+    return render(request, 'home.html', {'spots': spots})
 
 def about(request):
     """About page view"""
     return render(request, 'about.html')
 
 def contact(request):
-    """Contact page view - Admin sees messages, Students/Users can send messages"""
-    # Admin users see the message inbox
-    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+    """Contact page view - Admin sees messages, Students/Users can send messages and travel requests"""
+    is_admin = request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+    
+    if is_admin:
         contact_messages = ContactMessage.objects.all()
+        custom_requests = CustomTripRequest.objects.all()
         unread_count = contact_messages.filter(status='unread').count()
+        pending_requests_count = custom_requests.filter(status='pending').count()
+        
         return render(request, 'contact.html', {
             'contact_messages': contact_messages,
+            'custom_requests': custom_requests,
             'unread_count': unread_count,
+            'pending_requests_count': pending_requests_count,
             'is_admin_view': True
         })
     
-    # Students/Users see the contact form
+    # Students/Users side
+    contact_form = ContactMessageForm(prefix='contact')
+    request_form = CustomTripRequestForm(prefix='request')
+    
     if request.method == 'POST':
-        form = ContactMessageForm(request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            if request.user.is_authenticated:
-                message.user = request.user
-            message.save()
-            messages.success(request, '✅ Your message has been sent successfully! We will get back to you within 24 hours.')
-            return redirect('contact')
-        else:
-            messages.error(request, '❌ Please correct the errors below.')
+        if 'submit_contact' in request.POST:
+            contact_form = ContactMessageForm(request.POST, prefix='contact')
+            if contact_form.is_valid():
+                msg = contact_form.save(commit=False)
+                if request.user.is_authenticated:
+                    msg.user = request.user
+                msg.save()
+                messages.success(request, '✅ Your message has been sent successfully!')
+                return redirect('contact')
+            else:
+                messages.error(request, '❌ Please correct the errors in your contact message.')
+        
+        elif 'submit_request' in request.POST:
+            request_form = CustomTripRequestForm(request.POST, prefix='request')
+            if request_form.is_valid():
+                trip_request = request_form.save(commit=False)
+                if request.user.is_authenticated:
+                    trip_request.user = request.user
+                trip_request.save()
+                messages.success(request, '✅ Your travel request has been submitted and will be reviewed by admin!')
+                return redirect('contact')
+            else:
+                messages.error(request, '❌ Please correct the errors in your custom trip request.')
+    
     else:
-        # Pre-fill form for logged-in users
-        initial_data = {}
+        # Pre-fill standard form if authenticated
         if request.user.is_authenticated:
-            initial_data = {
+            contact_form = ContactMessageForm(prefix='contact', initial={
                 'first_name': request.user.first_name or request.user.username,
                 'last_name': request.user.last_name or '',
                 'email': request.user.email,
-            }
-        form = ContactMessageForm(initial=initial_data)
-    
+            })
+            request_form = CustomTripRequestForm(prefix='request', initial={
+                'full_name': f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username,
+                'email': request.user.email,
+                'phone': getattr(request.user, 'profile', None).phone if hasattr(request.user, 'profile') else ''
+            })
+
     return render(request, 'contact.html', {
-        'form': form,
+        'contact_form': contact_form,
+        'request_form': request_form,
         'is_admin_view': False
     })
+
+@staff_member_required
+def approve_trip_request(request, request_id):
+    """Admin approves a custom trip request"""
+    trip_request = get_object_or_404(CustomTripRequest, id=request_id)
+    trip_request.status = 'approved'
+    trip_request.save()
+    messages.success(request, f'✅ Trip request #{request_id} from {trip_request.full_name} has been approved.')
+    return redirect('contact')
+
+@staff_member_required
+def reject_trip_request(request, request_id):
+    """Admin rejects a custom trip request"""
+    trip_request = get_object_or_404(CustomTripRequest, id=request_id)
+    trip_request.status = 'rejected'
+    trip_request.save()
+    messages.warning(request, f'❌ Trip request #{request_id} from {trip_request.full_name} has been rejected.')
+    return redirect('contact')
+
+@staff_member_required
+def delete_trip_request(request, request_id):
+    """Admin deletes a custom trip request"""
+    trip_request = get_object_or_404(CustomTripRequest, id=request_id)
+    trip_request.delete()
+    messages.success(request, f'🗑️ Trip request #{request_id} deleted.')
+    return redirect('contact')
 
 @staff_member_required
 def mark_message_read(request, message_id):
@@ -116,6 +177,7 @@ def mark_message_replied(request, message_id):
 @staff_member_required
 def delete_message(request, message_id):
     """Delete a contact message"""
+    # Allowing GET for easier deletion via link if forms are blocked
     message = get_object_or_404(ContactMessage, id=message_id)
     message.delete()
     messages.success(request, 'Message deleted successfully.')
@@ -144,39 +206,17 @@ def travel_history(request):
 
 # Study Tour and Booking Views
 def study_tour_detail(request, tour_id=None):
-    """Study tour package details page"""
-    try:
-        if tour_id:
-            study_tour = get_object_or_404(StudyTour, id=tour_id, is_active=True)
-        else:
-            study_tour = StudyTour.objects.filter(is_active=True).first()
-        
-        if not study_tour:
-            return render(request, 'packages.html', {
-                'study_tour': None,
-                'tour_dates': [],
-                'inclusions': [],
-                'database_error': True
-            })
-        
-        tour_dates = study_tour.dates.filter(is_available=True)
-        inclusions = study_tour.inclusions.all()
-        
-        context = {
-            'study_tour': study_tour,
-            'tour_dates': tour_dates,
-            'inclusions': inclusions,
-            'database_error': False
-        }
-        
-    except Exception as e:
-        print(f"Error: {e}")
-        context = {
-            'study_tour': None,
-            'tour_dates': [],
-            'inclusions': [],
-            'database_error': True
-        }
+    """Packages page - shows admin-created TourPackages"""
+    # Get all active TourPackages
+    tour_packages = TourPackage.objects.filter(is_active=True)
+    
+    # For admins, show all packages including inactive ones
+    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+        tour_packages = TourPackage.objects.all()
+    
+    context = {
+        'tour_packages': tour_packages,
+    }
     
     return render(request, 'packages.html', context)
 
@@ -480,3 +520,455 @@ def update_booking_status(request, booking_id):
             messages.error(request, f'Booking #{booking_id} not found.')
     
     return redirect('admin_booking_management')
+
+# Tourist Spot Views
+@login_required
+def add_spot(request):
+    """Add a new tourist spot"""
+    if request.method == 'POST':
+        form = TouristSpotForm(request.POST, request.FILES)
+        if form.is_valid():
+            spot = form.save(commit=False)
+            spot.created_by = request.user
+            spot.save()
+            messages.success(request, f'"{spot.name}" has been added successfully!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = TouristSpotForm()
+    
+    return render(request, 'add_spot.html', {'form': form})
+
+def spot_detail(request, spot_id):
+    """View tourist spot details"""
+    spot = get_object_or_404(TouristSpot, id=spot_id)
+    return render(request, 'spot_detail.html', {'spot': spot})
+
+@login_required
+def update_spot(request, spot_id):
+    """Update tourist spot information"""
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to update spots.')
+        return redirect('home')
+    
+    spot = get_object_or_404(TouristSpot, id=spot_id)
+    
+    if request.method == 'POST':
+        form = TouristSpotForm(request.POST, request.FILES, instance=spot)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'"{spot.name}" updated successfully!')
+            return redirect('home')
+    else:
+        form = TouristSpotForm(instance=spot)
+    
+    return render(request, 'update_spot.html', {
+        'form': form,
+        'spot': spot
+    })
+
+@login_required
+def delete_spot(request, spot_id):
+    """Delete tourist spot"""
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to delete spots.')
+        return redirect('home')
+    
+    spot = get_object_or_404(TouristSpot, id=spot_id)
+    
+    if request.method == 'POST':
+        spot_name = spot.name
+        spot.delete()
+        messages.success(request, f'"{spot_name}" deleted successfully!')
+        return redirect('home')
+    
+    return render(request, 'delete_confirm.html', {'spot': spot})
+
+
+# =====================================================
+# Tour Package Views
+# =====================================================
+
+# Category information helper
+CATEGORY_INFO = {
+    'study_tour': {
+        'name': 'Study Tour Packages',
+        'icon': 'fa-graduation-cap',
+        'description': 'Educational tours for students to explore and learn from different places'
+    },
+    'cycling': {
+        'name': 'Cycling Packages',
+        'icon': 'fa-bicycle',
+        'description': 'Adventure cycling tours and marathon events for cycling enthusiasts'
+    },
+    'university_program': {
+        'name': 'University Programs',
+        'icon': 'fa-university',
+        'description': 'Professional development programs and university events'
+    }
+}
+
+@login_required
+@user_passes_test(is_admin)
+def select_package_category(request):
+    """Admin selects category before adding package"""
+    return render(request, 'select_package_category.html')
+
+
+def category_packages(request, category):
+    """List packages by category for users and admins"""
+    # Validate category
+    if category not in CATEGORY_INFO:
+        messages.error(request, 'Invalid category.')
+        return redirect('home')
+    
+    # Get category info
+    cat_info = CATEGORY_INFO[category]
+    
+    # Get packages for this category
+    tour_packages = TourPackage.objects.filter(category=category, is_active=True)
+    
+    # For admins, show all packages including inactive ones
+    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+        tour_packages = TourPackage.objects.filter(category=category)
+    
+    context = {
+        'tour_packages': tour_packages,
+        'category_name': cat_info['name'],
+        'category_icon': cat_info['icon'],
+        'category_description': cat_info['description'],
+        'category_slug': category,
+    }
+    
+    return render(request, 'category_packages.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def add_package(request):
+    """Admin adds new tour package"""
+    category = request.GET.get('category', 'study_tour')
+    
+    if category not in CATEGORY_INFO:
+        category = 'study_tour'
+    
+    cat_info = CATEGORY_INFO[category]
+    
+    if request.method == 'POST':
+        form = TourPackageForm(request.POST, request.FILES)
+        if form.is_valid():
+            package = form.save(commit=False)
+            package.created_by = request.user
+            package.save()
+            messages.success(request, f'Package "{package.name}" has been created successfully!')
+            return redirect('category_packages', category=package.category)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = TourPackageForm(initial={'category': category})
+    
+    context = {
+        'form': form,
+        'category_name': cat_info['name'],
+        'category_icon': cat_info['icon'],
+        'category_slug': category,
+    }
+    
+    return render(request, 'add_package.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def edit_package(request, package_id):
+    """Admin edits tour package"""
+    package = get_object_or_404(TourPackage, id=package_id)
+    
+    if request.method == 'POST':
+        form = TourPackageForm(request.POST, request.FILES, instance=package)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Package "{package.name}" has been updated successfully!')
+            return redirect('category_packages', category=package.category)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = TourPackageForm(instance=package)
+    
+    context = {
+        'form': form,
+        'package': package,
+    }
+    
+    return render(request, 'edit_package.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def delete_package(request, package_id):
+    """Admin deletes tour package"""
+    package = get_object_or_404(TourPackage, id=package_id)
+    category = package.category
+    
+    if request.method == 'POST':
+        package_name = package.name
+        package.delete()
+        messages.success(request, f'Package "{package_name}" has been deleted.')
+        return redirect('category_packages', category=category)
+    
+    return render(request, 'delete_package.html', {'package': package})
+
+
+@login_required
+def book_package(request, package_id):
+    """User books a tour package"""
+    package = get_object_or_404(TourPackage, id=package_id, is_active=True)
+    
+    # Admins shouldn't book packages
+    if request.user.is_staff or request.user.is_superuser:
+        messages.warning(request, 'Administrators cannot book packages. Please use a student account.')
+        return redirect('category_packages', category=package.category)
+    
+    if request.method == 'POST':
+        form = PackageBookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user
+            booking.package = package
+            booking.save()
+            messages.success(request, f'Your booking for "{package.name}" has been submitted! You will be notified once it\'s approved.')
+            return redirect('my_package_bookings')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        # Pre-fill form with user info if available
+        initial_data = {
+            'student_name': f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username,
+            'email': request.user.email,
+        }
+        form = PackageBookingForm(initial=initial_data)
+    
+    context = {
+        'form': form,
+        'package': package,
+    }
+    
+    return render(request, 'book_package.html', context)
+
+
+@login_required
+def my_package_bookings(request):
+    """User views their package bookings"""
+    bookings = PackageBooking.objects.filter(user=request.user).select_related('package')
+    
+    # Mark bookings as notified when student views them
+    unnotified = bookings.filter(student_notified=False, status__in=['approved', 'rejected'])
+    for booking in unnotified:
+        booking.student_notified = True
+        booking.save()
+    
+    return render(request, 'my_package_bookings.html', {'bookings': bookings})
+
+
+@login_required
+def cancel_package_booking(request, booking_id):
+    """User cancels their pending package booking"""
+    booking = get_object_or_404(PackageBooking, id=booking_id, user=request.user)
+    
+    if booking.status != 'pending':
+        messages.error(request, 'You can only cancel pending bookings.')
+        return redirect('my_package_bookings')
+    
+    booking.status = 'cancelled'
+    booking.save()
+    messages.success(request, 'Your booking has been cancelled.')
+    return redirect('my_package_bookings')
+
+
+@login_required
+def get_booking_payment(request, booking_id):
+    """API: Get payment info for a booking"""
+    booking = get_object_or_404(PackageBooking, id=booking_id)
+    
+    # Check authorization - user can only see their own bookings, admin can see all
+    if not (request.user == booking.user or request.user.is_staff or request.user.is_superuser):
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    # Get the latest payment
+    payment = booking.payments.first()
+    
+    if payment:
+        total_price = float(booking.package.price * booking.num_persons)
+        amount_paid = float(payment.amount_paid)
+        return JsonResponse({
+            'has_payment': True,
+            'amount_paid': amount_paid,
+            'total_price': total_price,
+            'remaining_amount': total_price - amount_paid,
+            'status': payment.status,
+            'bkash_last_4': payment.bkash_last_4,
+        })
+    else:
+        total_price = float(booking.package.price * booking.num_persons)
+        return JsonResponse({
+            'has_payment': False,
+            'total_price': total_price,
+        })
+
+
+@login_required
+def submit_payment(request, booking_id):
+    """API: Submit a payment for a booking"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    booking = get_object_or_404(PackageBooking, id=booking_id, user=request.user)
+    
+    if booking.status != 'approved':
+        return JsonResponse({'error': 'Booking must be approved to submit payment'}, status=400)
+    
+    amount_paid = request.POST.get('amount_paid')
+    bkash_last_4 = request.POST.get('bkash_last_4')
+    
+    errors = {}
+    
+    if not amount_paid:
+        errors['amount_paid'] = ['Amount is required']
+    else:
+        try:
+            amount_paid = float(amount_paid)
+            if amount_paid <= 0:
+                errors['amount_paid'] = ['Amount must be greater than 0']
+        except ValueError:
+            errors['amount_paid'] = ['Invalid amount']
+    
+    if not bkash_last_4:
+        errors['bkash_last_4'] = ['bKash last 4 digits are required']
+    elif len(bkash_last_4) != 4 or not bkash_last_4.isdigit():
+        errors['bkash_last_4'] = ['Please enter exactly 4 digits']
+    
+    if errors:
+        return JsonResponse({'success': False, 'details': errors})
+    
+    # Create or update payment
+    payment, created = Payment.objects.get_or_create(
+        booking=booking,
+        defaults={
+            'amount_paid': amount_paid,
+            'bkash_last_4': bkash_last_4,
+            'status': 'pending'
+        }
+    )
+    
+    if not created:
+        payment.amount_paid = amount_paid
+        payment.bkash_last_4 = bkash_last_4
+        payment.status = 'pending'
+        payment.save()
+    
+    return JsonResponse({'success': True})
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_package_bookings(request):
+    """Admin view to manage all package bookings"""
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    
+    bookings = PackageBooking.objects.all().select_related('user', 'package').order_by('-created_at')
+    
+    if search_query:
+        bookings = bookings.filter(
+            Q(student_name__icontains=search_query) |
+            Q(student_id__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(package__name__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+    
+    if status_filter:
+        bookings = bookings.filter(status=status_filter)
+    
+    # Statistics
+    total_bookings = bookings.count()
+    pending_count = bookings.filter(status='pending').count()
+    approved_count = bookings.filter(status='approved').count()
+    rejected_count = bookings.filter(status='rejected').count()
+    
+    # Pagination
+    paginator = Paginator(bookings, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'bookings': page_obj,
+        'total_bookings': total_bookings,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+        'search_query': search_query,
+        'status_filter': status_filter,
+    }
+    
+    return render(request, 'admin_package_bookings.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def approve_package_booking(request, booking_id):
+    """Admin approves a package booking"""
+    if request.method == 'POST':
+        booking = get_object_or_404(PackageBooking, id=booking_id)
+        booking.status = 'approved'
+        booking.student_notified = False  # Reset so student gets notification
+        admin_notes = request.POST.get('admin_notes', '')
+        if admin_notes:
+            booking.admin_notes = admin_notes
+        booking.save()
+        messages.success(request, f'Booking #{booking_id} has been approved.')
+    return redirect('admin_package_bookings')
+
+
+@login_required
+@user_passes_test(is_admin)
+def reject_package_booking(request, booking_id):
+    """Admin rejects a package booking"""
+    if request.method == 'POST':
+        booking = get_object_or_404(PackageBooking, id=booking_id)
+        booking.status = 'rejected'
+        booking.student_notified = False  # Reset so student gets notification
+        admin_notes = request.POST.get('admin_notes', '')
+        if admin_notes:
+            booking.admin_notes = admin_notes
+        booking.save()
+        messages.success(request, f'Booking #{booking_id} has been rejected.')
+    return redirect('admin_package_bookings')
+
+
+@login_required
+@user_passes_test(is_admin)
+def verify_payment(request, payment_id):
+    """Admin verifies a student payment"""
+    if request.method == 'POST':
+        payment = get_object_or_404(Payment, id=payment_id)
+        payment.status = 'verified'
+        payment.save()
+        messages.success(request, f'Payment from {payment.booking.student_name} has been verified.')
+    return redirect('admin_package_bookings')
+
+
+@login_required
+@user_passes_test(is_admin)
+def reject_payment(request, payment_id):
+    """Admin rejects a student payment"""
+    if request.method == 'POST':
+        payment = get_object_or_404(Payment, id=payment_id)
+        payment.status = 'rejected'
+        admin_notes = request.POST.get('admin_notes', '')
+        if admin_notes:
+            payment.admin_notes = admin_notes
+        payment.save()
+        messages.success(request, f'Payment from {payment.booking.student_name} has been rejected.')
+    return redirect('admin_package_bookings')
+

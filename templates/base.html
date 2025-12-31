@@ -314,6 +314,29 @@
 
                 <div class="buttons">
                     {% if user.is_authenticated %}
+                    {% if user.is_staff or user.is_superuser %}
+                    <!-- Admin Notification Bell -->
+                    <a href="{% url 'admin_package_bookings' %}" class="notification-bell"
+                        style="color: white; font-size: 1.5rem; margin-right: 10px; position: relative; text-decoration: none;">
+                        <i class="fas fa-bell"></i>
+                        {% if pending_bookings_count %}
+                        <span class="notification-badge"
+                            style="position: absolute; top: -5px; right: -8px; background: #dc3545; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold;">{{
+                            pending_bookings_count }}</span>
+                        {% endif %}
+                    </a>
+                    {% else %}
+                    <!-- Student Notification Bell -->
+                    <a href="{% url 'my_package_bookings' %}" class="notification-bell"
+                        style="color: white; font-size: 1.5rem; margin-right: 10px; position: relative; text-decoration: none;">
+                        <i class="fas fa-bell"></i>
+                        {% if student_notifications_count %}
+                        <span class="notification-badge"
+                            style="position: absolute; top: -5px; right: -8px; background: #dc3545; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold;">{{
+                            student_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                    {% endif %}
                     <form method="POST" action="{% url 'custom_logout' %}" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="loginbutton"

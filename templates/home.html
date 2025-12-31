@@ -5,29 +5,39 @@
 <!-- Your homepage specific content goes here -->
 <section class="hero">
     <div class="hero-background">
-        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img1.jpeg' %}');"></div>
-        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img2.jpeg' %}');"></div>
-        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img3.jpg' %}');"></div>
-        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img4.jpeg' %}');"></div>
-        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img5.jpeg' %}');"></div>
+        <div class="hero-slide"
+            style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img1.jpeg' %}');">
+        </div>
+        <div class="hero-slide"
+            style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img2.jpeg' %}');">
+        </div>
+        <div class="hero-slide"
+            style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img3.jpg' %}');"></div>
+        <div class="hero-slide"
+            style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img4.jpeg' %}');">
+        </div>
+        <div class="hero-slide"
+            style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img5.jpeg' %}');">
+        </div>
     </div>
-    
+
     <div class="hero-overlay"></div>
-    
+
     <div class="herocontainer">
         <div class="hero-content">
-            <h2>North East University Bangladesh</h2>      
-            <p>Smart, safe, and simple travel solutions for every student, faculty, and staff. Book your campus rides, study tours, and academic journeys with just a few clicks.</p>
-            
+            <h2>North East University Bangladesh</h2>
+            <p>Smart, safe, and simple travel solutions for every student, faculty, and staff. Book your campus rides,
+                study tours, and academic journeys with just a few clicks.</p>
+
             <!-- FIX: Add conditional button in hero section -->
             {% if user.is_authenticated %}
-                <a href="{% url 'add_spot' %}" class="btn-link">
-                    <button class="btn packbtn">Add New Spot</button>
-                </a>
+            <a href="{% url 'add_spot' %}" class="btn-link">
+                <button class="btn packbtn">Add New Spot</button>
+            </a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn-link">
-                    <button class="btn packbtn">Login to Add Spots</button>
-                </a>
+            <a href="{% url 'login' %}" class="btn-link">
+                <button class="btn packbtn">Login to Add Spots</button>
+            </a>
             {% endif %}
         </div>
     </div>
@@ -47,12 +57,12 @@
                     <option value="africa">Ratargul</option>
                 </select>
             </div>
-            
+
             <div class="search-group">
                 <label for="departure"><i class="fas fa-calendar-alt"></i> Departure Date</label>
                 <input type="date" class="search-input" id="departure">
             </div>
-            
+
             <div class="search-group">
                 <label for="duration"><i class="fas fa-clock"></i> Duration</label>
                 <select class="search-select" id="duration">
@@ -101,7 +111,11 @@
         <img src="{% static 'images/jaflong.jpg' %}" alt="jaflong">
         <div class="card-content">
             <h3>Jaflong</h3>
-            <p>Jaflong, located between tea gardens and hills, is the tourist hotspot of Sylhet, a hill station, positioned on the border between Bangladesh and Meghalaya, the north-eastern state of India. Also home to the Khasi tribe, Jaflong is famed for its lush, tropical setting and the areas of natural beauty surrounding it.Jaflong is a beautiful place that every traveller should visit, especially if you love nature.</p>
+            <p>Jaflong, located between tea gardens and hills, is the tourist hotspot of Sylhet, a hill station,
+                positioned on the border between Bangladesh and Meghalaya, the north-eastern state of India. Also home
+                to the Khasi tribe, Jaflong is famed for its lush, tropical setting and the areas of natural beauty
+                surrounding it.Jaflong is a beautiful place that every traveller should visit, especially if you love
+                nature.</p>
             <a href="#">Know more..</a>
         </div>
     </div>
@@ -110,7 +124,11 @@
         <img src="{% static 'images/lalakhal.jpg' %}" alt="lalakhal">
         <div class="card-content">
             <h3>Lalakhal</h3>
-            <p>Lalakhal, an area surrounded by hills, tea gardens, natural forests, and rivers near the Meghalaya Mountain Ranges, is quickly becoming a top tourist destination. The star attraction is the Shari River's enchanting aquamarine water, with its small evergreen mounds on either side, spreading throughout the whole area. Across the River, one can easily reach "Lalakhal Tea Garden" one of the oldest and most beautiful tea gardens in the country.</p>
+            <p>Lalakhal, an area surrounded by hills, tea gardens, natural forests, and rivers near the Meghalaya
+                Mountain Ranges, is quickly becoming a top tourist destination. The star attraction is the Shari River's
+                enchanting aquamarine water, with its small evergreen mounds on either side, spreading throughout the
+                whole area. Across the River, one can easily reach "Lalakhal Tea Garden" one of the oldest and most
+                beautiful tea gardens in the country.</p>
             <a href="#">Know more..</a>
         </div>
     </div>
@@ -119,13 +137,17 @@
         <img src="{% static 'images/bisnakandi.webp' %}" alt="bisnakandi">
         <div class="card-content">
             <h3>Bisnakandi</h3>
-            <p>Bisnakandi, conveniently situated near Sylhet on the India-Bangladesh, is a combination of green hills, clouds, a variety of stones and crystal-clear waters flowing from the north-eastern Meghalaya Mountains. Visitors can lie down on the rocks and relax or go for a peaceful swim. The Border Hut, which is also a market, is located at Bisnakandi's -Bangladesh border. Although no set schedule is available, the hut is generally open every 4 days. Khasian vendors sell mountain fruit, clothes and cosmetics.</p>
+            <p>Bisnakandi, conveniently situated near Sylhet on the India-Bangladesh, is a combination of green hills,
+                clouds, a variety of stones and crystal-clear waters flowing from the north-eastern Meghalaya Mountains.
+                Visitors can lie down on the rocks and relax or go for a peaceful swim. The Border Hut, which is also a
+                market, is located at Bisnakandi's -Bangladesh border. Although no set schedule is available, the hut is
+                generally open every 4 days. Khasian vendors sell mountain fruit, clothes and cosmetics.</p>
             <a href="#">Know more..</a>
         </div>
     </div>
 
     <!-- Dynamic Spots from Database - ONLY ONE LOOP -->
-    
+
     {% for spot in spots %}
     <div class="card">
         {% if spot.image %}
@@ -138,7 +160,7 @@
             <p>{{ spot.description|truncatewords:30 }}</p>
             <div class="card-actions">
                 <a href="{% url 'spot_detail' spot.id %}" class="btn-know-more">Know more..</a>
-                
+
                 <!-- ADMIN ACTIONS - Only show for admin users -->
                 {% if user.is_authenticated and user.is_staff or user.is_superuser %}
                 <div class="admin-actions">
@@ -146,11 +168,12 @@
                     <a href="{% url 'update_spot' spot.id %}" class="btn-update">
                         <i class="fas fa-edit"></i> Update
                     </a>
-                    
+
                     <!-- Delete Button -->
                     <form method="POST" action="{% url 'delete_spot' spot.id %}" class="delete-form">
                         {% csrf_token %}
-                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete {{ spot.name }}?')">
+                        <button type="submit" class="btn-delete"
+                            onclick="return confirm('Are you sure you want to delete {{ spot.name }}?')">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                     </form>
@@ -180,40 +203,62 @@
 <!-- Packages Section (ONLY ONE) -->
 <section class="packages">
     <div class="packages-grid">
-        <div class="package-card">
-            <div class="package-img" style="background-image: url('{% static 'images/studytour.jpg' %}');"></div>
-            <div class="package-content">
-                <h3>Study Tour Package</h3>
-                <p>"We don't just travel to see places; we travel to understand them."</p>
-                <div class="package-meta">
-                    <span><i class="fas fa-clock"></i> Seasonal</span>
-                    <span><i class="fas fa-tag"></i> Educational</span>
+        <a href="{% url 'category_packages' 'study_tour' %}" class="package-card-link" style="text-decoration: none;">
+            <div class="package-card">
+                <div class="package-img" style="background-image: url('{% static 'images/studytour.jpg' %}');"></div>
+                <div class="package-content">
+                    <h3>Study Tour Package</h3>
+                    <p>"We don't just travel to see places; we travel to understand them."</p>
+                    <div class="package-meta">
+                        <span><i class="fas fa-clock"></i> Seasonal</span>
+                        <span><i class="fas fa-tag"></i> Educational</span>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <span
+                            style="background: var(--primary); color: white; padding: 10px 25px; border-radius: 25px; display: inline-block;">View
+                            Packages</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="package-card">
-            <div class="package-img" style="background-image: url('{% static 'images/rideimg.jpg' %}')"></div>
-            <div class="package-content">
-                <h3>Cycling Packages</h3>
-                <p>"Life is like riding a bicycle — to keep your balance, you must keep moving."</p>
-                <div class="package-meta">
-                    <span><i class="fas fa-clock"></i> Daily</span>
-                    <span><i class="fas fa-tag"></i> Affordable</span>
+        </a>
+        <a href="{% url 'category_packages' 'cycling' %}" class="package-card-link" style="text-decoration: none;">
+            <div class="package-card">
+                <div class="package-img" style="background-image: url('{% static 'images/rideimg.jpg' %}')"></div>
+                <div class="package-content">
+                    <h3>Cycling Packages</h3>
+                    <p>"Life is like riding a bicycle — to keep your balance, you must keep moving."</p>
+                    <div class="package-meta">
+                        <span><i class="fas fa-clock"></i> Daily</span>
+                        <span><i class="fas fa-tag"></i> Affordable</span>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <span
+                            style="background: var(--primary); color: white; padding: 10px 25px; border-radius: 25px; display: inline-block;">View
+                            Packages</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="package-card">
-            <div class="package-img" style="background-image: url('{% static 'images/program.jpg' %}');"></div>
-            <div class="package-content">
-                <h3>University Programs</h3>
-                <p>"Programs build skills, but more importantly, they build people."</p>
-                <div class="package-meta">
-                    <span><i class="fas fa-clock"></i> On-demand</span>
-                    <span><i class="fas fa-tag"></i> Professional</span>
+        </a>
+
+        <a href="{% url 'category_packages' 'university_program' %}" class="package-card-link"
+            style="text-decoration: none;">
+            <div class="package-card">
+                <div class="package-img" style="background-image: url('{% static 'images/program.jpg' %}');"></div>
+                <div class="package-content">
+                    <h3>University Programs</h3>
+                    <p>"Programs build skills, but more importantly, they build people."</p>
+                    <div class="package-meta">
+                        <span><i class="fas fa-clock"></i> On-demand</span>
+                        <span><i class="fas fa-tag"></i> Professional</span>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <span
+                            style="background: var(--primary); color: white; padding: 10px 25px; border-radius: 25px; display: inline-block;">View
+                            Packages</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </section>
 
@@ -224,13 +269,9 @@
 
 <section class="map">
     <div class="map-container">
-        <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3618.664060405622!2d91.8802585751735!3d24.91667767789215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3750552bccee3f0d%3A0x5e46f00c897d7a0e!2sNorth%20East%20University%20Bangladesh%20(NEUB)!5e0!3m2!1sen!2sbd!4v1691412345678!5m2!1sen!2sbd" 
-            width="100%" 
-            height="450" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy" 
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3618.664060405622!2d91.8802585751735!3d24.91667767789215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3750552bccee3f0d%3A0x5e46f00c897d7a0e!2sNorth%20East%20University%20Bangladesh%20(NEUB)!5e0!3m2!1sen!2sbd!4v1691412345678!5m2!1sen!2sbd"
+            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade">
         </iframe>
     </div>
@@ -266,11 +307,25 @@
         animation: hero-slide 20s infinite;
     }
 
-    .hero-slide:nth-child(1) { animation-delay: 0s; }
-    .hero-slide:nth-child(2) { animation-delay: 5s; }
-    .hero-slide:nth-child(3) { animation-delay: 10s; }
-    .hero-slide:nth-child(4) { animation-delay: 15s; }
-    .hero-slide:nth-child(5) { animation-delay: 20s; }
+    .hero-slide:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .hero-slide:nth-child(2) {
+        animation-delay: 5s;
+    }
+
+    .hero-slide:nth-child(3) {
+        animation-delay: 10s;
+    }
+
+    .hero-slide:nth-child(4) {
+        animation-delay: 15s;
+    }
+
+    .hero-slide:nth-child(5) {
+        animation-delay: 20s;
+    }
 
     .hero-overlay {
         position: absolute;
@@ -333,11 +388,29 @@
     }
 
     @keyframes hero-slide {
-        0% { opacity: 0; transform: scale(1.1); }
-        10% { opacity: 1; transform: scale(1); }
-        25% { opacity: 1; }
-        35% { opacity: 0; transform: scale(1); }
-        100% { opacity: 0; transform: scale(1.1); }
+        0% {
+            opacity: 0;
+            transform: scale(1.1);
+        }
+
+        10% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        25% {
+            opacity: 1;
+        }
+
+        35% {
+            opacity: 0;
+            transform: scale(1);
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(1.1);
+        }
     }
 
     .searchcontainer {
@@ -385,7 +458,8 @@
         color: white;
     }
 
-    .search-select, .search-input {
+    .search-select,
+    .search-input {
         width: 100%;
         padding: 12px 15px;
         border: 1px solid #ddd;
@@ -471,17 +545,42 @@
         font-size: 30px;
     }
 
-    .images:nth-child(1) { animation-delay: 0s; }
-    .images:nth-child(2) { animation-delay: 4s; }
-    .images:nth-child(3) { animation-delay: 8s; }
-    .images:nth-child(4) { animation-delay: 12s; }
+    .images:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .images:nth-child(2) {
+        animation-delay: 4s;
+    }
+
+    .images:nth-child(3) {
+        animation-delay: 8s;
+    }
+
+    .images:nth-child(4) {
+        animation-delay: 12s;
+    }
 
     @keyframes fade {
-        0% { opacity: 0; }
-        10% { opacity: 1; }
-        25% { opacity: 1; }
-        35% { opacity: 0; }
-        100% { opacity: 0; }
+        0% {
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 1;
+        }
+
+        25% {
+            opacity: 1;
+        }
+
+        35% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 0;
+        }
     }
 
     .places {
@@ -584,7 +683,7 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         transition: left 0.5s;
     }
 
@@ -659,18 +758,18 @@
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .admin-actions {
             width: 100%;
             justify-content: space-between;
         }
-        
+
         .btn-know-more,
         .card a[href="#"] {
             width: 100%;
             margin-bottom: 5px;
         }
-        
+
         .btn-update,
         .btn-delete {
             flex: 1;
@@ -679,23 +778,24 @@
     }
 
     @media (max-width: 480px) {
+
         .btn-know-more,
         .card a[href="#"] {
             padding: 10px 15px;
             font-size: 14px;
         }
-        
+
         .btn-update,
         .btn-delete {
             padding: 8px 12px;
             font-size: 13px;
         }
-        
+
         .admin-actions {
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .btn-update,
         .btn-delete {
             width: 100%;

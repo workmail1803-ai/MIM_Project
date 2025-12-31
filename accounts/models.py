@@ -118,3 +118,34 @@ class ContactMessage(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class CustomTripRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    full_name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    
+    destination = models.CharField(max_length=200)
+    travel_date = models.DateField(null=True, blank=True)
+    duration_days = models.IntegerField(help_text="Expected duration in days")
+    num_persons = models.IntegerField()
+    budget_range = models.CharField(max_length=100, blank=True)
+    
+    additional_details = models.TextField(blank=True, help_text="Any specific places you want to visit or other requirements")
+    
+    admin_notes = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Trip Request: {self.destination} by {self.full_name}"

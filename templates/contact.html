@@ -17,771 +17,322 @@
     <section class="contact-info">
         <div class="info-container">
             <div class="info-card">
-                <div class="info-icon">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
+                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <h3>Visit Our Office</h3>
                 <p>North East University Bangladesh</p>
                 <p>Telihaor, Sheikhghat, Sylhet-3100</p>
-                <p>Bangladesh</p>
             </div>
             <div class="info-card">
-                <div class="info-icon">
-                    <i class="fas fa-phone-alt"></i>
-                </div>
+                <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
                 <h3>Call Us</h3>
                 <p>+880 02996631220</p>
                 <p>+880 01712345678</p>
-                <p>+880 01898765432</p>
             </div>
             <div class="info-card">
-                <div class="info-icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
+                <div class="info-icon"><i class="fas fa-envelope"></i></div>
                 <h3>Email Us</h3>
                 <p>info@wondrneub.edu.bd</p>
                 <p>support@wondrneub.edu.bd</p>
-                <p>bookings@wondrneub.edu.bd</p>
             </div>
             <div class="info-card">
-                <div class="info-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
+                <div class="info-icon"><i class="fas fa-clock"></i></div>
                 <h3>Office Hours</h3>
-                <p>Sunday - Thursday: 9:00 AM - 5:00 PM</p>
-                <p>Friday: 9:00 AM - 1:00 PM</p>
-                <p>Saturday: Closed</p>
+                <p>Sun - Thu: 9AM - 5PM</p>
+                <p>Fri: 9AM - 1PM</p>
             </div>
         </div>
     </section>
 
-    <!-- Contact Form & Map Section -->
+    {% if messages %}
+    <div style="margin-bottom: 30px;">
+        {% for message in messages %}
+        <div style="padding: 15px; border-radius: 8px; margin-bottom: 10px; {% if message.tags == 'success' %}background: #d4edda; color: #155724; border: 1px solid #c3e6cb;{% else %}background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Contact Main Section -->
     <section class="contact-main">
-        <div class="contact-wrapper">
-            <!-- Contact Form -->
-            <div class="form-section">
-                <div class="form-header">
-                    <h2>Send us a Message</h2>
-                    <p>Fill out the form below and we'll get back to you within 24 hours.</p>
+        {% if is_admin_view %}
+        <!-- Admin Dashboard -->
+        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 40px;">
+            <!-- Tab Header -->
+            <div style="display: flex; background: #f8f9fa; border-bottom: 1px solid #eee;">
+                <button onclick="switchTab('messages')" id="tab-messages" class="admin-tab active">
+                    <i class="fas fa-inbox"></i> Messages ({{ unread_count }})
+                </button>
+                <button onclick="switchTab('requests')" id="tab-requests" class="admin-tab">
+                    <i class="fas fa-paper-plane"></i> Custom Trip Requests ({{ pending_requests_count }})
+                </button>
+            </div>
+
+            <!-- Messages List -->
+            <div id="section-messages" class="admin-section active">
+                <div style="padding: 25px;">
+                    <h2 style="color: #49a078; margin: 0 0 20px 0;"><i class="fas fa-envelope-open"></i> Standard Messages</h2>
+                    {% if contact_messages %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--dark); color: white;">
+                                    <th style="padding: 15px; text-align: left;">From</th>
+                                    <th style="padding: 15px; text-align: left;">Subject</th>
+                                    <th style="padding: 15px; text-align: left;">Message</th>
+                                    <th style="padding: 15px; text-align: center;">Date</th>
+                                    <th style="padding: 15px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for msg in contact_messages %}
+                                <tr style="border-bottom: 1px solid #eee; {% if msg.status == 'unread' %}background: #fff3cd;{% endif %}">
+                                    <td style="padding: 15px;">
+                                        <strong>{{ msg.full_name }}</strong><br>
+                                        <small>{{ msg.email }}</small>
+                                    </td>
+                                    <td style="padding: 15px;">
+                                        <span style="background: #e9ecef; padding: 5px 10px; border-radius: 5px;">{{ msg.get_subject_display }}</span>
+                                    </td>
+                                    <td style="padding: 15px; max-width: 300px;">
+                                        <p style="margin: 0;">{{ msg.message|truncatewords:20 }}</p>
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <small>{{ msg.created_at|date:"M d" }}</small>
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            {% if msg.status == 'unread' %}
+                                            <form action="{% url 'mark_message_read' msg.id %}" method="POST">
+                                                {% csrf_token %}
+                                                <button type="submit" class="action-btn-sm" style="background: #17a2b8;" title="Mark Read"><i class="fas fa-eye"></i></button>
+                                            </form>
+                                            {% endif %}
+                                            <a href="{% url 'delete_message' msg.id %}" onclick="return confirm('Delete message?');" class="action-btn-sm" style="background: #dc3545;" title="Delete"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p style="text-align: center; color: #999; padding: 40px;">No messages found.</p>
+                    {% endif %}
                 </div>
-                <form class="contact-form" method="POST">
+            </div>
+
+            <!-- Custom Requests List -->
+            <div id="section-requests" class="admin-section">
+                <div style="padding: 25px;">
+                    <h2 style="color: #49a078; margin: 0 0 20px 0;"><i class="fas fa-plane-departure"></i> Custom Trip Requests</h2>
+                    {% if custom_requests %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--dark); color: white;">
+                                    <th style="padding: 15px; text-align: left;">Requester</th>
+                                    <th style="padding: 15px; text-align: left;">Destination</th>
+                                    <th style="padding: 15px; text-align: center;">Trip Details</th>
+                                    <th style="padding: 15px; text-align: center;">Status</th>
+                                    <th style="padding: 15px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in custom_requests %}
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 15px;">
+                                        <strong>{{ req.full_name }}</strong><br>
+                                        <small>{{ req.email }}</small><br>
+                                        <small>{{ req.phone }}</small>
+                                    </td>
+                                    <td style="padding: 15px;">
+                                        <strong style="color: var(--primary);">{{ req.destination }}</strong>
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <small>Date: {{ req.travel_date|default:"TBD" }}</small><br>
+                                        <small>{{ req.num_persons }} Persons, {{ req.duration_days }} Days</small><br>
+                                        <small>Budget: {{ req.budget_range }}</small>
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            {% if req.status == 'pending' %}
+                                            <a href="{% url 'approve_trip_request' req.id %}" class="action-btn-sm" style="background: #28a745;" title="Approve"><i class="fas fa-check"></i></a>
+                                            <a href="{% url 'reject_trip_request' req.id %}" class="action-btn-sm" style="background: #ffc107;" title="Reject"><i class="fas fa-times"></i></a>
+                                            {% endif %}
+                                            <a href="{% url 'delete_trip_request' req.id %}" onclick="return confirm('Delete request?');" class="action-btn-sm" style="background: #dc3545;" title="Delete"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p style="text-align: center; color: #999; padding: 40px;">No custom trip requests found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Student Side: Two Forms -->
+        <div class="forms-container">
+            <!-- Standard Contact Form -->
+            <div class="form-card" style="margin-bottom: 50px;">
+                <div class="form-header">
+                    <h2><i class="fas fa-paper-plane"></i> Send us a Message</h2>
+                    <p>Have a quick question or feedback? We'd love to hear from you.</p>
+                </div>
+                <form method="POST">
                     {% csrf_token %}
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="firstName">First Name *</label>
-                            <input type="text" id="firstName" name="firstName" required>
+                            <label>First Name</label>
+                            {{ contact_form.first_name }}
                         </div>
                         <div class="form-group">
-                            <label for="lastName">Last Name *</label>
-                            <input type="text" id="lastName" name="lastName" required>
+                            <label>Last Name</label>
+                            {{ contact_form.last_name }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            {{ contact_form.email }}
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            {{ contact_form.phone }}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email Address *</label>
-                        <input type="email" id="email" name="email" required>
+                        <label>Subject</label>
+                        {{ contact_form.subject }}
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone">
+                        <label>Message</label>
+                        {{ contact_form.message }}
                     </div>
-                    <div class="form-group">
-                        <label for="subject">Subject *</label>
-                        <select id="subject" name="subject" required>
-                            <option value="">Select a subject</option>
-                            <option value="booking">Trip Booking</option>
-                            <option value="information">General Information</option>
-                            <option value="complaint">Complaint</option>
-                            <option value="suggestion">Suggestion</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message *</label>
-                        <textarea id="message" name="message" rows="6" placeholder="Tell us about your inquiry..." required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-paper-plane"></i>
-                        Send Message
+                    <button type="submit" name="submit_contact" class="submit-btn" style="background: #1e4e41;">
+                        <i class="fas fa-envelope"></i> Send Message
                     </button>
                 </form>
             </div>
 
-            <!-- Map Section -->
-            <div class="map-section">
-                <div class="map-header">
-                    <h2>Find Us</h2>
-                    <p>Visit our campus office for direct assistance with your travel plans.</p>
-                </div>
-                <div class="map-container">
-                    <div class="map-placeholder">
-                        <i class="fas fa-map-marked-alt"></i>
-                        <h3>NEUB Campus Location</h3>
-                        <p>Telihaor, Sheikhghat, Sylhet</p>
-                        <p>Interactive Map</p>
-                        <div class="map-features">
-                            <div class="map-feature">
-                                <i class="fas fa-bus"></i>
-                                <span>Bus Stop: 5min walk</span>
-                            </div>
-                            <div class="map-feature">
-                                <i class="fas fa-parking"></i>
-                                <span>Parking Available</span>
-                            </div>
-                            <div class="map-feature">
-                                <i class="fas fa-wheelchair"></i>
-                                <span>Accessible</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="location-details">
-                    <h4>Getting Here</h4>
-                    <div class="transport-options">
-                        <div class="transport-option">
-                            <i class="fas fa-bus"></i>
-                            <div>
-                                <strong>By Bus:</strong>
-                                <span>Take any bus going to Sheikhghat and get down at NEUB stop</span>
-                            </div>
-                        </div>
-                        <div class="transport-option">
-                            <i class="fas fa-taxi"></i>
-                            <div>
-                                <strong>By CNG/Auto:</strong>
-                                <span>Available from any point in Sylhet city</span>
-                            </div>
-                        </div>
-                        <div class="transport-option">
-                            <i class="fas fa-car"></i>
-                            <div>
-                                <strong>By Car:</strong>
-                                <span>Ample parking space available inside campus</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div style="text-align: center; margin: 40px 0;">
+                <hr style="border: 0; border-top: 2px dashed #ddd; width: 100%;">
+                <span style="background: #f8f9fa; padding: 0 20px; position: relative; top: -12px; color: #999; font-weight: 600;">OR</span>
             </div>
-        </div>
-    </section>
 
-    <!-- FAQ Section -->
-    <section class="faq-section">
-        <div class="title">
-            <h1>Frequently Asked Questions</h1>
-            <p>Quick answers to common questions</p>
-        </div>
-        <div class="faq-container">
-            <div class="faq-item">
-                <div class="faq-question">
-                    <h3>How do I book a trip?</h3>
-                    <i class="fas fa-chevron-down"></i>
+            <!-- Custom Trip Request Form -->
+            <div class="form-card" style="border-top: 5px solid #29a35c;">
+                <div class="form-header">
+                    <h2 style="color: #29a35c;"><i class="fas fa-map-marked-alt"></i> Request a Custom Trip</h2>
+                    <p>Can't find the perfect package? Tell us where you want to go and we'll plan it for you!</p>
                 </div>
-                <div class="faq-answer">
-                    <p>You can book trips through our website by visiting the Packages page, selecting your desired trip, and completing the registration form. Alternatively, visit our office during working hours for direct booking assistance.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <h3>What payment methods do you accept?</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>We accept cash payments at our office, mobile banking (bKash, Nagad), and bank transfers. Online payment options are coming soon!</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <h3>Can I get a refund if I cancel my trip?</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Refunds are available if cancellation is made at least 48 hours before the trip departure time. A small processing fee may apply. No refunds for cancellations within 48 hours of departure.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <h3>Do you offer group discounts?</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Yes! We offer special discounts for groups of 5 or more people. Student clubs and departments can also avail additional discounts for educational trips.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <h3>What should I bring on the trips?</h3>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>We recommend bringing comfortable clothing, walking shoes, water bottle, sunscreen, and your student ID. For overnight trips, we provide a detailed packing list upon booking.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Emergency Contact Section -->
-    <section class="emergency-section">
-        <div class="emergency-card">
-            <div class="emergency-icon">
-                <i class="fas fa-phone-alt"></i>
-            </div>
-            <div class="emergency-content">
-                <h2>Emergency Contact</h2>
-                <p>For urgent assistance during trips or after office hours</p>
-                <div class="emergency-numbers">
-                    <div class="emergency-number">
-                        <strong>Tour Guide:</strong>
-                        <span>+880 01712345678</span>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        {{ request_form.full_name }}
                     </div>
-                    <div class="emergency-number">
-                        <strong>Coordinator:</strong>
-                        <span>+880 01898765432</span>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            {{ request_form.email }}
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            {{ request_form.phone }}
+                        </div>
                     </div>
-                    <div class="emergency-number">
-                        <strong>Office Emergency:</strong>
-                        <span>+880 02996631220</span>
+                    <div class="form-group">
+                        <label>Destination (Place)</label>
+                        {{ request_form.destination }}
                     </div>
-                </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Planned Travel Date</label>
+                            {{ request_form.travel_date }}
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (Days)</label>
+                            {{ request_form.duration_days }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of Persons</label>
+                            {{ request_form.num_persons }}
+                        </div>
+                        <div class="form-group">
+                            <label>Budget Range (optional)</label>
+                            {{ request_form.budget_range }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Details</label>
+                        {{ request_form.additional_details }}
+                    </div>
+                    <button type="submit" name="submit_request" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Travel Request
+                    </button>
+                </form>
             </div>
         </div>
+        {% endif %}
     </section>
 </div>
 
 <style>
-/* Main Content */
-.container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.title {
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eaeaea;
-}
-
-.title h1 {
-    color: #49a078;
-    font-size: 2.2rem;
-    margin-bottom: 10px;
-}
-
-.title p {
-    color: #52b788;
-    font-size: larger;
-    max-width: 600px;
-}
-
-/* Hero Section */
-.hero-section {
-    background: linear-gradient(135deg, var(--primary), #28a65e);
-    color: white;
-    padding: 80px 40px;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 60px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.hero-content h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.hero-content p {
-    font-size: 1.3rem;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Contact Info Section */
-.contact-info {
-    margin-bottom: 60px;
-}
-
-.info-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-}
-
-.info-card {
-    background: white;
-    padding: 40px 30px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease;
-    border-top: 5px solid var(--primary);
-}
-
-.info-card:hover {
-    transform: translateY(-10px);
-}
-
-.info-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--primary), #28a65e);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 25px;
-    color: white;
-    font-size: 30px;
-}
-
-.info-card h3 {
-    color: #2c3e50;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-.info-card p {
-    color: #7f8c8d;
-    margin-bottom: 8px;
-    line-height: 1.5;
-}
-
-/* Contact Main Section */
-.contact-main {
-    margin-bottom: 60px;
-}
-
-.contact-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    align-items: start;
-}
-
-/* Form Section */
-.form-section {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-}
-
-.form-header {
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.form-header h2 {
-    color: #49a078;
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.form-header p {
-    color: #7f8c8d;
-}
-
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    color: #2c3e50;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    padding: 12px 15px;
-    border: 2px solid #eaeaea;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: #f8f9fa;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(41, 163, 92, 0.1);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-    font-family: inherit;
-}
-
-.submit-btn {
-    background: linear-gradient(135deg, var(--primary), #28a65e);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.submit-btn:hover {
-    background: linear-gradient(135deg, #28a65e, var(--primary));
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* Map Section */
-.map-section {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-}
-
-.map-header {
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.map-header h2 {
-    color: #49a078;
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.map-header p {
-    color: #7f8c8d;
-}
-
-.map-container {
-    margin-bottom: 30px;
-}
-
-.map-placeholder {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    padding: 60px 40px;
-    text-align: center;
-    color: white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.map-placeholder i {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    opacity: 0.9;
-}
-
-.map-placeholder h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
-
-.map-placeholder p {
-    margin-bottom: 8px;
-    opacity: 0.9;
-}
-
-.map-features {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-}
-
-.map-feature {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.2);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
-
-.location-details h4 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-    font-size: 1.3rem;
-}
-
-.transport-options {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.transport-option {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.transport-option:hover {
-    background: #e9ecef;
-    transform: translateX(5px);
-}
-
-.transport-option i {
-    color: var(--primary);
-    font-size: 1.2rem;
-    margin-top: 2px;
-}
-
-.transport-option div {
-    display: flex;
-    flex-direction: column;
-}
-
-.transport-option strong {
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.transport-option span {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-}
-
-/* FAQ Section */
-.faq-section {
-    margin-bottom: 60px;
-}
-
-.faq-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.faq-item {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    overflow: hidden;
-}
-
-.faq-question {
-    padding: 25px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.faq-question:hover {
-    background: #f8f9fa;
-}
-
-.faq-question h3 {
-    color: #2c3e50;
-    font-size: 1.1rem;
-    margin: 0;
-}
-
-.faq-question i {
-    color: var(--primary);
-    transition: transform 0.3s ease;
-}
-
-.faq-answer {
-    padding: 0 30px;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.faq-answer.active {
-    padding: 0 30px 25px 30px;
-    max-height: 500px;
-}
-
-.faq-answer p {
-    color: #7f8c8d;
-    line-height: 1.7;
-    margin: 0;
-}
-
-/* Emergency Section */
-.emergency-section {
-    margin-bottom: 60px;
-}
-
-.emergency-card {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-    color: white;
-    padding: 50px 40px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.emergency-icon {
-    width: 100px;
-    height: 100px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-}
-
-.emergency-content h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.emergency-content p {
-    opacity: 0.9;
-    margin-bottom: 25px;
-    font-size: 1.1rem;
-}
-
-.emergency-numbers {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.emergency-number {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    font-size: 1.1rem;
-}
-
-.emergency-number strong {
-    min-width: 150px;
-}
-
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 2.2rem;
-    }
+    .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+    .hero-section { background: linear-gradient(135deg, var(--primary), #28a65e); color: white; padding: 60px 20px; border-radius: 15px; text-align: center; margin-bottom: 40px; }
+    .hero-content h1 { font-size: 2.5rem; margin-bottom: 10px; }
     
-    .hero-content p {
-        font-size: 1.1rem;
-    }
+    .info-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 50px; }
+    .info-card { background: white; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .info-icon { font-size: 24px; color: var(--primary); margin-bottom: 15px; }
     
-    .contact-wrapper {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
+    .form-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    .form-header { text-align: center; margin-bottom: 30px; }
+    .form-header h2 { margin-bottom: 10px; }
     
-    .form-row {
-        grid-template-columns: 1fr;
-    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+    .form-group input:focus { border-color: var(--primary); outline: none; }
     
-    .info-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .emergency-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 25px;
-    }
-    
-    .map-features {
-        flex-direction: column;
-        align-items: center;
-    }
-}
+    .submit-btn { width: 100%; padding: 15px; border-radius: 8px; border: none; color: white; background: var(--primary); font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
+    .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); opacity: 0.9; }
 
-@media screen and (max-width: 480px) {
-    .hero-section {
-        padding: 50px 20px;
-    }
+    /* Admin Styles */
+    .admin-tab { flex: 1; padding: 15px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; transition: all 0.3s; }
+    .admin-tab.active { background: white; color: var(--primary); border-top: 3px solid var(--primary); }
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
     
-    .hero-content h1 {
-        font-size: 1.8rem;
+    .action-btn-sm { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; color: white; text-decoration: none; border: none; cursor: pointer; font-size: 14px; }
+    .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+
+    @media (max-width: 768px) {
+        .form-row { grid-template-columns: 1fr; }
     }
-    
-    .form-section,
-    .map-section {
-        padding: 25px;
-    }
-    
-    .map-placeholder {
-        padding: 40px 25px;
-    }
-    
-    .emergency-card {
-        padding: 30px 25px;
-    }
-    
-    .emergency-number {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-}
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // FAQ Toggle functionality
-    document.querySelectorAll('.faq-question').forEach(question => {
-        question.addEventListener('click', () => {
-            const answer = question.nextElementSibling;
-            const icon = question.querySelector('i');
-            
-            // Toggle current answer
-            answer.classList.toggle('active');
-            icon.classList.toggle('fa-chevron-up');
-            icon.classList.toggle('fa-chevron-down');
-            
-            // Close other answers
-            document.querySelectorAll('.faq-answer').forEach(otherAnswer => {
-                if (otherAnswer !== answer) {
-                    otherAnswer.classList.remove('active');
-                    otherAnswer.previousElementSibling.querySelector('i').classList.remove('fa-chevron-up');
-                    otherAnswer.previousElementSibling.querySelector('i').classList.add('fa-chevron-down');
-                }
-            });
-        });
-    });
-
-    // Form submission
-    document.querySelector('.contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Thank you for your message! We will get back to you within 24 hours.');
-        this.reset();
-    });
-});
+    function switchTab(tabName) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        
+        document.getElementById('tab-' + tabName).classList.add('active');
+        document.getElementById('section-' + tabName).classList.add('active');
+    }
 </script>
 {% endblock %}
