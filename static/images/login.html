@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Wond'rNEUB</title>
+  <link rel="stylesheet" href="login.css">
+  <link rel="icon" type="image/x-icon" href="./icon.svg"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <header>
+    <div class="header">
+      <div class="header-content">
+        <div class="logo">
+          <img src="./logo.svg" alt="Wond'rNEUB Logo">
+          <h1>Wond'rNEUB</h1>
+        </div>
+
+        <button class="menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+
+        <nav>
+          <ul>
+            <li><a href="../TM-02 homepage/home.html">Home</a></li>
+            <li><a href="../TM-02 packages/package.html">Packages</a></li>
+            <li><a href="../TM-02 schedule/schedule.html">Schedules</a></li>
+            <li><a href="../TM-02 about/about.html">About</a></li>
+            <li><a href="../TM-02 contact/contact.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="university-logo">
+    <img src="./versitylogo.svg" alt="University Logo">
+  </div>
+
+  <div class="login-box">
+    <h2>Login</h2>
+    <form action="" method="POST">
+      <div class="inputbox">
+        <input type="email" name="email" placeholder="Email" required>
+      </div>
+      <div class="inputbox">
+        <input type="password" name="password" placeholder="Password" required>
+      </div>
+      <input type="submit" value="Login" class="btn">
+      <a href="forgot-password.html" class="forgot">Forgot Password?</a>
+    </form>
+  </div>
+
+  <footer>
+    <div class="footercontainer">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>About Wond'rNEUB Travel</h3>
+          <p>The official travel management system for university students, faculty, and staff.</p>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="../TM-02 homepage/home.html">Home</a></li>
+            <li><a href="../TM-02 packages/package.html">Packages</a></li>
+            <li><a href="../TM-02 schedule/schedule.html">Schedules</a></li>
+            <li><a href="../TM-02 about/about.html">About</a></li>
+            <li><a href="../TM-02 contact/contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Contact Us</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Telihaor, Sheikhghat, Sylhet-3100</p>
+          <p><i class="fas fa-phone"></i> +880 02996631220</p>
+          <p><i class="fas fa-envelope"></i> info@neub.edu.bd</p>
+        </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMenu = document.querySelector('nav ul');
+
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        navMenu.classList.remove('active');
+      });
+    });
+  </script>
+</body>
+</html>

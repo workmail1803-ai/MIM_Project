@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Wond'r NEUB{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/icon.svg' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #29a35c;
+            --secondary: #2d5e58;
+            --accent: #97B067;
+            --dark: #1e4e41;
+            --warning: #839b57;
+        }
+
+        body {
+            background-color: #e6fcee;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 5px;
+        }
+
+        header {
+            background-color: var(--secondary);
+            border-bottom: #54d35a solid 4px;
+            color: white;
+            padding: 5px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            gap: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 80px;
+            width: 80px;
+        }
+
+        .logo h1 {
+            font-size: 25px;
+            font-weight: 500;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+        }
+
+        nav a {
+            border-bottom: #27ae60 solid 4px;
+            font-size: larger;
+            color: white;
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            border-bottom: #37dd7c solid 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .buttons a {
+            text-decoration: none;
+            font-size: larger;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 450;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .loginbutton {
+            border: 2px solid white;
+            color: rgb(255, 255, 255);
+        }
+
+        .loginbutton:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .regbutton {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .regbutton:hover {
+            background-color: var(--warning);
+        }
+
+        .user-info {
+            color: white;
+            font-weight: 500;
+            padding: 10px 20px;
+        }
+
+        .messages {
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 60px;
+        }
+
+        .footercontainer {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+            
+            nav ul {
+                position: fixed;
+                top: 89px;
+                left: 0;
+                width: 100%;
+                background: var(--secondary);
+                flex-direction: column;
+                gap: 0;
+                padding: 20px 0;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            
+            nav ul.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="{% static 'images/logo.svg' %}" alt="Wond'rNEUB Logo">
+                    <h1>Wond'rNEUB</h1>
+                </div>
+                
+                <button class="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <nav>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'packages' %}">Packages</a></li>
+                        <li><a href="{% url 'travel_history' %}">Travel History</a></li>
+                        <li><a href="{% url 'about' %}">About</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="buttons">
+                    {% if user.is_authenticated %}
+                        <form method="POST" action="{% url 'custom_logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="loginbutton" style="background: none; border: 2px solid white; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: larger;">
+                                Logout
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="loginbutton">Login</a>
+                        <a href="{% url 'register' %}" class="regbutton">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+        <div class="footercontainer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About Wand'rNEUB Travel</h3>
+                    <p>The official travel management system for university students, faculty, and staff.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Telihaor, Sheikhghat, Sylhet-3100</p>
+                    <p><i class="fas fa-phone"></i> +880 02996631220</p>
+                    <p><i class="fas fa-envelope"></i> www.neub.edu.bd</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('nav ul');
+            
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+            }
+            
+            // Close mobile menu when clicking on links
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

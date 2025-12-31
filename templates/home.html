@@ -1,0 +1,773 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Your homepage specific content goes here -->
+<section class="hero">
+    <div class="hero-background">
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img1.jpeg' %}');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img2.jpeg' %}');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img3.jpg' %}');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img4.jpeg' %}');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.1)), url('{% static 'images/img5.jpeg' %}');"></div>
+    </div>
+    
+    <div class="hero-overlay"></div>
+    
+    <div class="herocontainer">
+        <div class="hero-content">
+            <h2>North East University Bangladesh</h2>      
+            <p>Smart, safe, and simple travel solutions for every student, faculty, and staff. Book your campus rides, study tours, and academic journeys with just a few clicks.</p>
+            
+            <!-- FIX: Add conditional button in hero section -->
+            {% if user.is_authenticated %}
+                <a href="{% url 'add_spot' %}" class="btn-link">
+                    <button class="btn packbtn">Add New Spot</button>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-link">
+                    <button class="btn packbtn">Login to Add Spots</button>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<div class="searchcontainer">
+    <div class="search-part">
+        <h3 class="search-title">Find Your Plan</h3>
+        <form class="search-form">
+            <div class="search-group">
+                <label for="destination"><i class="fas fa-map-marker-alt"></i> Destination</label>
+                <select class="search-select" id="destination">
+                    <option value="">Select Destination</option>
+                    <option value="europe">Jaflong</option>
+                    <option value="asia">Lalakhal</option>
+                    <option value="africa">Bisnakandi</option>
+                    <option value="africa">Ratargul</option>
+                </select>
+            </div>
+            
+            <div class="search-group">
+                <label for="departure"><i class="fas fa-calendar-alt"></i> Departure Date</label>
+                <input type="date" class="search-input" id="departure">
+            </div>
+            
+            <div class="search-group">
+                <label for="duration"><i class="fas fa-clock"></i> Duration</label>
+                <select class="search-select" id="duration">
+                    <option value="">Any Duration</option>
+                    <option value="3-5">5 hours</option>
+                    <option value="6-8">7-8 hours</option>
+                    <option value="9-12">1 Days</option>
+                    <option value="13+">2 Days</option>
+                </select>
+            </div>
+            <div class="search-btn">
+                <button type="submit" class="search-button">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="imgslider">
+    <div class="images">
+        <img src="{% static 'images/jaflong.jpg' %}" alt="Jaflong">
+        <div class="caption">Jaflong</div>
+    </div>
+    <div class="images">
+        <img src="{% static 'images/lalakhal.jpg' %}" alt="Lalakhal">
+        <div class="caption">Lalakhal</div>
+    </div>
+    <div class="images">
+        <img src="{% static 'images/bisnakandi.webp' %}" alt="Bisnakandi">
+        <div class="caption">Bisnakandi</div>
+    </div>
+    <div class="images">
+        <img src="{% static 'images/ratargul.jpg' %}" alt="Ratargul">
+        <div class="caption">Ratargul</div>
+    </div>
+</div>
+
+<div class="title">
+    <h1>Sylhet Tourist Spot</h1>
+    <p>Sylhet is a land of nature and culture.</p>
+</div>
+
+<!-- Combined Static and Dynamic Spots Section -->
+<div class="places">
+    <!-- Static Spots -->
+    <div class="card">
+        <img src="{% static 'images/jaflong.jpg' %}" alt="jaflong">
+        <div class="card-content">
+            <h3>Jaflong</h3>
+            <p>Jaflong, located between tea gardens and hills, is the tourist hotspot of Sylhet, a hill station, positioned on the border between Bangladesh and Meghalaya, the north-eastern state of India. Also home to the Khasi tribe, Jaflong is famed for its lush, tropical setting and the areas of natural beauty surrounding it.Jaflong is a beautiful place that every traveller should visit, especially if you love nature.</p>
+            <a href="#">Know more..</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <img src="{% static 'images/lalakhal.jpg' %}" alt="lalakhal">
+        <div class="card-content">
+            <h3>Lalakhal</h3>
+            <p>Lalakhal, an area surrounded by hills, tea gardens, natural forests, and rivers near the Meghalaya Mountain Ranges, is quickly becoming a top tourist destination. The star attraction is the Shari River's enchanting aquamarine water, with its small evergreen mounds on either side, spreading throughout the whole area. Across the River, one can easily reach "Lalakhal Tea Garden" one of the oldest and most beautiful tea gardens in the country.</p>
+            <a href="#">Know more..</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <img src="{% static 'images/bisnakandi.webp' %}" alt="bisnakandi">
+        <div class="card-content">
+            <h3>Bisnakandi</h3>
+            <p>Bisnakandi, conveniently situated near Sylhet on the India-Bangladesh, is a combination of green hills, clouds, a variety of stones and crystal-clear waters flowing from the north-eastern Meghalaya Mountains. Visitors can lie down on the rocks and relax or go for a peaceful swim. The Border Hut, which is also a market, is located at Bisnakandi's -Bangladesh border. Although no set schedule is available, the hut is generally open every 4 days. Khasian vendors sell mountain fruit, clothes and cosmetics.</p>
+            <a href="#">Know more..</a>
+        </div>
+    </div>
+
+    <!-- Dynamic Spots from Database - ONLY ONE LOOP -->
+    
+    {% for spot in spots %}
+    <div class="card">
+        {% if spot.image %}
+        <img src="{{ spot.image.url }}" alt="{{ spot.name }}">
+        {% else %}
+        <img src="{% static 'images/default.jpg' %}" alt="{{ spot.name }}">
+        {% endif %}
+        <div class="card-content">
+            <h3>{{ spot.name }}</h3>
+            <p>{{ spot.description|truncatewords:30 }}</p>
+            <div class="card-actions">
+                <a href="{% url 'spot_detail' spot.id %}" class="btn-know-more">Know more..</a>
+                
+                <!-- ADMIN ACTIONS - Only show for admin users -->
+                {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+                <div class="admin-actions">
+                    <!-- Update Button -->
+                    <a href="{% url 'update_spot' spot.id %}" class="btn-update">
+                        <i class="fas fa-edit"></i> Update
+                    </a>
+                    
+                    <!-- Delete Button -->
+                    <form method="POST" action="{% url 'delete_spot' spot.id %}" class="delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete {{ spot.name }}?')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Add Spot Button Section - BEFORE PACKAGES (ONLY ONE) -->
+{% if user.is_authenticated %}
+<div class="title">
+    <h1>Add New Tourist Spot</h1>
+    <p>Contribute to our growing collection of Sylhet's beautiful destinations</p>
+    <a href="{% url 'add_spot' %}" class="btn packbtn">Add New Spot</a>
+</div>
+{% else %}
+<div class="title">
+    <h1>Want to Add Tourist Spots?</h1>
+    <p>Login to contribute to our growing collection of Sylhet's beautiful destinations</p>
+    <a href="{% url 'login' %}" class="btn packbtn">Login to Add Spot</a>
+</div>
+{% endif %}
+
+<!-- Packages Section (ONLY ONE) -->
+<section class="packages">
+    <div class="packages-grid">
+        <div class="package-card">
+            <div class="package-img" style="background-image: url('{% static 'images/studytour.jpg' %}');"></div>
+            <div class="package-content">
+                <h3>Study Tour Package</h3>
+                <p>"We don't just travel to see places; we travel to understand them."</p>
+                <div class="package-meta">
+                    <span><i class="fas fa-clock"></i> Seasonal</span>
+                    <span><i class="fas fa-tag"></i> Educational</span>
+                </div>
+            </div>
+        </div>
+        <div class="package-card">
+            <div class="package-img" style="background-image: url('{% static 'images/rideimg.jpg' %}')"></div>
+            <div class="package-content">
+                <h3>Cycling Packages</h3>
+                <p>"Life is like riding a bicycle — to keep your balance, you must keep moving."</p>
+                <div class="package-meta">
+                    <span><i class="fas fa-clock"></i> Daily</span>
+                    <span><i class="fas fa-tag"></i> Affordable</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="package-card">
+            <div class="package-img" style="background-image: url('{% static 'images/program.jpg' %}');"></div>
+            <div class="package-content">
+                <h3>University Programs</h3>
+                <p>"Programs build skills, but more importantly, they build people."</p>
+                <div class="package-meta">
+                    <span><i class="fas fa-clock"></i> On-demand</span>
+                    <span><i class="fas fa-tag"></i> Professional</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="title">
+    <h1>Check The Distance</h1>
+    <p>NEUB to...</p>
+</div>
+
+<section class="map">
+    <div class="map-container">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3618.664060405622!2d91.8802585751735!3d24.91667767789215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3750552bccee3f0d%3A0x5e46f00c897d7a0e!2sNorth%20East%20University%20Bangladesh%20(NEUB)!5e0!3m2!1sen!2sbd!4v1691412345678!5m2!1sen!2sbd" 
+            width="100%" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+</section>
+
+<style>
+    .hero {
+        position: relative;
+        height: 600px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .hero-slide {
+        position: absolute;
+        width: 100%;
+        height: 120%;
+        opacity: 0;
+        background-size: cover;
+        background-position: center;
+        animation: hero-slide 20s infinite;
+    }
+
+    .hero-slide:nth-child(1) { animation-delay: 0s; }
+    .hero-slide:nth-child(2) { animation-delay: 5s; }
+    .hero-slide:nth-child(3) { animation-delay: 10s; }
+    .hero-slide:nth-child(4) { animation-delay: 15s; }
+    .hero-slide:nth-child(5) { animation-delay: 20s; }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .herocontainer {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero-content h2 {
+        font-size: 32px;
+        margin-bottom: 20px;
+        color: #32ce73;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-content p {
+        font-size: 18px;
+        margin-bottom: 30px;
+        line-height: 1.6;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .packbtn {
+        background-color: #32ce73;
+        color: white;
+    }
+
+    .packbtn:hover {
+        background-color: #28a65e;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes hero-slide {
+        0% { opacity: 0; transform: scale(1.1); }
+        10% { opacity: 1; transform: scale(1); }
+        25% { opacity: 1; }
+        35% { opacity: 0; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.1); }
+    }
+
+    .searchcontainer {
+        display: flex;
+        justify-content: center;
+        margin: 40px 0;
+    }
+
+    .search-part {
+        margin-bottom: 80px;
+        width: 90%;
+        max-width: 1000px;
+        background: #49a078;
+        padding: 30px;
+        border-radius: 0px 0px 30px 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .search-title {
+        font-size: xx-large;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+    .search-form {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .search-group {
+        width: 200px;
+    }
+
+    .search-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: white;
+    }
+
+    .search-select, .search-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        background: white;
+    }
+
+    .search-btn {
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .search-button {
+        padding: 15px 25px;
+        background-color: #4d7298;
+        color: white;
+        border-radius: 10px;
+        font-size: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border: none;
+    }
+
+    .search-button:hover {
+        background-color: #73ba9b;
+    }
+
+    .title {
+        margin-top: 80px;
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 0 15px;
+    }
+
+    .title h1 {
+        color: #49a078;
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+    }
+
+    .title p {
+        color: #52b788;
+        font-size: larger;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .imgslider {
+        border: solid 10px #e0be36;
+        border-radius: 0% 20% 0% 20%;
+        position: relative;
+        width: 90%;
+        max-width: 1200px;
+        height: 400px;
+        overflow: hidden;
+        margin: 0 auto 60px;
+    }
+
+    .images {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        animation: fade 16s infinite;
+    }
+
+    .images img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .caption {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 30px;
+    }
+
+    .images:nth-child(1) { animation-delay: 0s; }
+    .images:nth-child(2) { animation-delay: 4s; }
+    .images:nth-child(3) { animation-delay: 8s; }
+    .images:nth-child(4) { animation-delay: 12s; }
+
+    @keyframes fade {
+        0% { opacity: 0; }
+        10% { opacity: 1; }
+        25% { opacity: 1; }
+        35% { opacity: 0; }
+        100% { opacity: 0; }
+    }
+
+    .places {
+        margin: auto;
+        width: 90%;
+        max-width: 1200px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 30px;
+        height: auto;
+        min-height: 500px;
+    }
+
+    .card img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .card-content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .card-content h3 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .card-content p {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 15px;
+        flex-grow: 1;
+        line-height: 1.5;
+    }
+
+    .card-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        gap: 10px;
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .delete-form {
+        margin: 0;
+    }
+
+    /* Enhanced Know More Button Styles */
+    .btn-know-more,
+    .card a[href="#"] {
+        text-decoration: none;
+        text-align: center;
+        background: linear-gradient(135deg, #2D9596, #58A399);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(45, 149, 150, 0.3);
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        margin-top: auto;
+    }
+
+    .btn-know-more::before,
+    .card a[href="#"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-know-more:hover,
+    .card a[href="#"]:hover {
+        background: linear-gradient(135deg, #58A399, #2D9596);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(45, 149, 150, 0.4);
+        text-decoration: none;
+        color: white;
+    }
+
+    .btn-know-more:hover::before,
+    .card a[href="#"]:hover::before {
+        left: 100%;
+    }
+
+    /* Update Button Styles */
+    .btn-update {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        white-space: nowrap;
+    }
+
+    .btn-update:hover {
+        background: linear-gradient(135deg, #0056b3, #007bff);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Delete Button Styles */
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        white-space: nowrap;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #c82333, #dc3545);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    /* Responsive adjustments for buttons */
+    @media (max-width: 768px) {
+        .card-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .admin-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .btn-know-more,
+        .card a[href="#"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        .btn-update,
+        .btn-delete {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .btn-know-more,
+        .card a[href="#"] {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        
+        .btn-update,
+        .btn-delete {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+        
+        .admin-actions {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .btn-update,
+        .btn-delete {
+            width: 100%;
+        }
+    }
+
+    .packages {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 0;
+    }
+
+    .packages-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .package-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s;
+    }
+
+    .package-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .package-img {
+        height: 250px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .package-content {
+        padding: 25px;
+    }
+
+    .package-content h3 {
+        font-size: 25px;
+        margin-bottom: 15px;
+        color: var(--primary);
+    }
+
+    .package-content p {
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .package-meta {
+        display: flex;
+        gap: 12px;
+        color: var(--secondary);
+        font-weight: 600;
+        flex-wrap: wrap;
+    }
+
+    .map {
+        padding: 10px 0;
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .map-container {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ spot.name }} - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<section class="package-hero" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), {% if spot.image %}url('{{ spot.image.url }}'){% else %}url('{% static 'images/default.jpg' %}'){% endif %}; background-size: cover; background-position: center; color: white; padding: 100px 20px; text-align: center;">
+    <h1 style="font-size: 3rem; margin-bottom: 20px;">{{ spot.name }}</h1>
+    <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">{{ spot.description|truncatewords:20 }}</p>
+</section>
+
+<div class="package-container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    <div class="package-details" style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <h2 style="color: #4ba28e; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eaeaea;">Package Details</h2>
+        
+        {% if spot.highlights %}
+        <h3 style="color: #4ba28e; margin: 20px 0 15px 0;">Highlights</h3>
+        <ul style="padding-left: 20px; margin-top: 10px;">
+            {% for highlight in spot.highlights.splitlines %}
+                {% if highlight.strip %}
+                <li style="margin-bottom: 8px;">{{ highlight.strip }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    
+    <div class="package-description" style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <h2 style="color: #4ba28e; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eaeaea;">About {{ spot.name }}</h2>
+        <p style="line-height: 1.8; text-align: justify;">{{ spot.description|linebreaksbr }}</p>
+    </div>
+    
+    {% if spot.travel_info %}
+    <div class="package-description" style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <h2 style="color: #4ba28e; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eaeaea;">Travel Information</h2>
+        <p style="line-height: 1.8;">{{ spot.travel_info|linebreaksbr }}</p>
+        
+        {% if spot.best_time %}
+        <h3 style="color: #4ba28e; margin: 25px 0 15px 0;">Best Time to Visit</h3>
+        <p style="line-height: 1.8;">{{ spot.best_time|linebreaksbr }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if spot.safety_info %}
+    <div class="warning-box" style="background: #fff8f0; border-left: 5px solid #ff9f43; padding: 20px; margin: 30px 0; border-radius: 0 8px 8px 0;">
+        <h3 style="color: #e67e22; margin-bottom: 10px;"><i class="fas fa-exclamation-triangle"></i> Important Safety Information</h3>
+        <p style="line-height: 1.8;">{{ spot.safety_info|linebreaksbr }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<div style="text-align: center; margin: 40px 0;">
+    <a href="{% url 'home' %}" class="btn packbtn">Back to Home</a>
+</div>
+{% endblock %}

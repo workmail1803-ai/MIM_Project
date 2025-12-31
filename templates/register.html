@@ -1,0 +1,1308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registration - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<div class="video_banner">
+    <img src="{% static 'images/banner.jpg' %}" alt="Travel Banner">
+</div>
+
+<div class="registration_section">
+    <div class="registration_div">
+        <h1 id="text1">Registration Now</h1>
+        
+        <div class="form_full_box">
+            <form id="registrationForm" method="POST">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Registration failed!</strong>
+                        <p>Please correct the errors below.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="role"><b>Select Your Role *</b></label>
+                    <select id="role" name="role" required onchange="toggleRegistrationType()">
+                        <option value="">-- Select Role --</option>
+                        <option value="student" {% if form.role.value == 'student' %}selected{% endif %}>Student</option>
+                        <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Administrator</option>
+                    </select>
+                </div>
+
+                <!-- Student Registration Form -->
+                <div id="studentRegistration" class="registration-type">
+                    <div class="role-header">
+                        <h3><i class="fas fa-user-graduate"></i> Student Registration</h3>
+                        <p>Register as a NEUB student to access travel services and study tours.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username"><b>Username *</b></label>
+                        <input type="text" placeholder="Enter Username" name="username" id="username" required 
+                               value="{{ form.username.value|default:'' }}" oninput="validateUsername()">
+                        <div class="validation-status" id="usernameStatus"></div>
+                        {% if form.username.errors %}
+                        <div class="error-text">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="first_name"><b>First Name *</b></label>
+                        <input type="text" placeholder="Enter First Name" name="first_name" id="first_name" required 
+                               value="{{ form.first_name.value|default:'' }}" oninput="validateName()">
+                        <div class="validation-status" id="firstNameStatus"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last_name"><b>Last Name *</b></label>
+                        <input type="text" placeholder="Enter Last Name" name="last_name" id="last_name" required 
+                               value="{{ form.last_name.value|default:'' }}" oninput="validateName()">
+                        <div class="validation-status" id="lastNameStatus"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email"><b>Email Address *</b></label>
+                        <input type="email" placeholder="Enter University Email" name="email" id="email" required 
+                               value="{{ form.email.value|default:'' }}" oninput="validateEmail()">
+                        <div class="validation-status" id="emailStatus"></div>
+                        {% if form.email.errors %}
+                        <div class="error-text">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="student_id"><b>Student ID *</b></label>
+                        <input type="text" placeholder="Enter Student ID" name="student_id" id="student_id" 
+                               value="{{ form.student_id.value|default:'' }}" oninput="validateStudentId()">
+                        <div class="validation-status" id="studentIdStatus"></div>
+                        {% if form.student_id.errors %}
+                        <div class="error-text">{{ form.student_id.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department"><b>Department *</b></label>
+                        <select id="department" name="department" onchange="validateDepartment()">
+                            <option value="">-- Select Department --</option>
+                            <option value="cse" {% if form.department.value == 'cse' %}selected{% endif %}>Computer Science & Engineering (CSE)</option>
+                            <option value="bba" {% if form.department.value == 'bba' %}selected{% endif %}>Business Administration (BBA)</option>
+                            <option value="llb" {% if form.department.value == 'llb' %}selected{% endif %}>Law (LLB)</option>
+                            <option value="english" {% if form.department.value == 'english' %}selected{% endif %}>English</option>
+                            <option value="economics" {% if form.department.value == 'economics' %}selected{% endif %}>Economics</option>
+                            <option value="sociology" {% if form.department.value == 'sociology' %}selected{% endif %}>Sociology</option>
+                        </select>
+                        <div class="validation-status" id="departmentStatus"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="session"><b>Academic Session *</b></label>
+                        <input type="text" placeholder="e.g., 2020-21, 2021-22" name="session" id="session" 
+                               value="{{ form.session.value|default:'' }}" oninput="validateSession()">
+                        <div class="validation-status" id="sessionStatus"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone"><b>Phone Number</b> <span class="optional">(Optional)</span></label>
+                        <input type="tel" placeholder="Enter Phone Number (e.g., 01712345678)" name="phone" id="phone" 
+                               value="{{ form.phone.value|default:'' }}" oninput="validatePhone()">
+                        <div class="validation-status" id="phoneStatus"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password1"><b>Password *</b></label>
+                        <input type="password" placeholder="Enter Password" name="password1" id="password1" required 
+                               oninput="validatePassword()">
+                        <div class="password-requirements">
+                            <small>Password must contain at least 8 characters with uppercase, lowercase, and numbers</small>
+                        </div>
+                        <div class="validation-status" id="password1Status"></div>
+                        {% if form.password1.errors %}
+                        <div class="error-text">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password2"><b>Repeat Password *</b></label>
+                        <input type="password" placeholder="Repeat Password" name="password2" id="password2" required 
+                               oninput="validatePasswordMatch()">
+                        <div class="validation-status" id="password2Status"></div>
+                        {% if form.password2.errors %}
+                        <div class="error-text">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="student-benefits">
+                        <h4><i class="fas fa-star"></i> Student Benefits:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Access to study tours and educational trips</li>
+                            <li><i class="fas fa-check"></i> Student discounts on travel packages</li>
+                            <li><i class="fas fa-check"></i> Academic travel history tracking</li>
+                            <li><i class="fas fa-check"></i> Special student-only events</li>
+                            <li><i class="fas fa-check"></i> Priority booking for educational tours</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Admin Contact Information -->
+                <div id="adminRegistration" class="registration-type" style="display: none;">
+                    <div class="role-header admin-header">
+                        <h3><i class="fas fa-user-shield"></i> Administrator Access</h3>
+                        <p>Administrator accounts require verification and approval from university administration.</p>
+                    </div>
+
+                    <div class="admin-contact-info">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="contact-content">
+                                <h4>Administrator Account Requirements</h4>
+                                <p>Administrator access is restricted to authorized university staff and faculty members. To request an administrator account:</p>
+                                
+                                <div class="requirements-list">
+                                    <div class="requirement-item">
+                                        <i class="fas fa-id-card"></i>
+                                        <span>Must be a verified university employee</span>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span>Requires departmental approval</span>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Official university email address required</span>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Background verification process</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-methods">
+                            <h4><i class="fas fa-headset"></i> Contact University Administration</h4>
+                            
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="method-details">
+                                    <h5>Phone Contact</h5>
+                                    <p>+880 02996631220</p>
+                                    <small>Available: Sunday-Thursday, 9:00 AM - 5:00 PM</small>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="method-details">
+                                    <h5>Email Contact</h5>
+                                    <p>admin@neub.edu.bd</p>
+                                    <p>registrar@neub.edu.bd</p>
+                                    <small>Include your employee ID and department in the subject</small>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="method-details">
+                                    <h5>In-Person Visit</h5>
+                                    <p>Administration Building, 2nd Floor</p>
+                                    <p>North East University Bangladesh</p>
+                                    <small>Telihaor, Sheikhghat, Sylhet-3100</small>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="method-details">
+                                    <h5>Required Documents</h5>
+                                    <ul>
+                                        <li>Employee ID Card Copy</li>
+                                        <li>Department Authorization Letter</li>
+                                        <li>Official Request Form</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-note">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p><strong>Note:</strong> Administrator accounts are manually verified and activated within 2-3 working days after submitting all required documents to the administration office.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="formActions" class="form-actions">
+                    <hr>
+                    <p class="terms">By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
+
+                    <button type="submit" class="registerbtn" id="submitButton">Register as Student</button>
+
+                    <div class="signin">
+                        <p>Already have an account?</p>
+                        <a href="{% url 'login' %}" class="loginbtn">Login</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary: #29a35c;
+    --secondary: #2d5e58;
+    --accent: #97B067;
+    --dark: #1e4e41;
+    --warning: #839b57;
+    --background: #DCD0A8;
+    --form-bg: #FFF9E5;
+}
+
+body, html {
+    height: 100%;
+    background-color: var(--background);
+    overflow-x: hidden;
+}
+
+/* Video Banner */
+.video_banner {
+    width: 100%;
+    height: 60vh;
+    position: relative;
+    overflow: hidden;
+    background: var(--dark);
+}
+
+.video_banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.registration_section {
+    padding: 50px 20px;
+    min-height: calc(100vh - 400px);
+}
+
+.registration_div {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #FFF9E5;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+#text1 {
+    color: white;
+    border: 3px solid var(--accent);
+    border-radius: 9px;
+    padding: 12px 25px;
+    width: fit-content;
+    margin: 0 auto 30px auto;
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--dark), var(--secondary));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.form_full_box {
+    background-color: #FFF9E5;
+    padding: 0;
+    text-align: left;
+    border-radius: 0;
+    margin-bottom: 0;
+    border: none;
+}
+
+.form_full_box label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+.optional {
+    font-weight: normal;
+    color: #666;
+    font-size: 0.9em;
+}
+
+select,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+select:focus,
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(41, 163, 92, 0.1);
+}
+
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+/* Validation Styles */
+.validation-status {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: none;
+}
+
+.validation-valid {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    display: block;
+}
+
+.validation-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    display: block;
+}
+
+.validation-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    display: block;
+}
+
+.password-requirements {
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.85rem;
+    padding: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.registration-type {
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border-left: 5px solid var(--primary);
+    margin-bottom: 20px;
+}
+
+.role-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e1e5e9;
+}
+
+.role-header h3 {
+    color: var(--primary);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.role-header p {
+    color: #666;
+    font-size: 1rem;
+}
+
+.admin-header {
+    border-left-color: var(--accent);
+}
+
+.admin-header h3 {
+    color: var(--accent);
+}
+
+.student-benefits {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    margin-top: 30px;
+}
+
+.student-benefits h4 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.student-benefits ul {
+    list-style: none;
+    padding: 0;
+}
+
+.student-benefits li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+}
+
+.student-benefits li i {
+    color: var(--primary);
+}
+
+.admin-contact-info {
+    background: white;
+    padding: 0;
+    border-radius: 8px;
+}
+
+.contact-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.contact-icon {
+    font-size: 2rem;
+    margin-top: 5px;
+}
+
+.contact-content h4 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.requirements-list {
+    display: grid;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+}
+
+.requirement-item i {
+    color: #ffd700;
+}
+
+.contact-methods {
+    padding: 20px;
+}
+
+.contact-methods h4 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-method {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent);
+}
+
+.method-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+.method-details h5 {
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.method-details p {
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+}
+
+.method-details small {
+    color: #666;
+    font-style: italic;
+}
+
+.method-details ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.method-details li {
+    margin-bottom: 5px;
+    padding-left: 15px;
+    position: relative;
+}
+
+.method-details li:before {
+    content: "•";
+    color: var(--primary);
+    position: absolute;
+    left: 0;
+}
+
+.admin-note {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.admin-note i {
+    color: #856404;
+    font-size: 1.2rem;
+    margin-top: 3px;
+}
+
+.admin-note p {
+    color: #856404;
+    margin: 0;
+}
+
+.form-actions {
+    margin-top: 30px;
+}
+
+hr {
+    margin: 20px 0;
+    border: 1px solid #e1e5e9;
+}
+
+.terms {
+    margin: 20px 0 10px 0;
+    text-align: center;
+    color: #333;
+}
+
+/* Buttons */
+.registerbtn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--dark), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(1, 39, 6, 0.3);
+    margin-top: 10px;
+}
+
+.registerbtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(1, 39, 6, 0.4);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+}
+
+.registerbtn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.signin {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signin p {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.loginbtn {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 150px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(151, 176, 103, 0.3);
+    text-decoration: none;
+    text-align: center;
+}
+
+.loginbtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(151, 176, 103, 0.4);
+    background: linear-gradient(135deg, var(--accent), var(--warning));
+    color: white;
+    text-decoration: none;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--dark);
+}
+
+.error-text {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+    padding: 5px 10px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+.alert {
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: slideDown 0.5s ease-out;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert i {
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.alert strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.alert p {
+    margin: 0;
+    font-size: 14px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .registration_div {
+        padding: 30px;
+        max-width: 90%;
+    }
+    
+    .video_banner {
+        height: 50vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .video_banner {
+        height: 40vh;
+    }
+    
+    .registration_section {
+        padding: 30px 15px;
+    }
+    
+    .registration_div {
+        padding: 25px;
+    }
+    
+    #text1 {
+        font-size: 1.5rem;
+        padding: 10px 20px;
+        width: 90%;
+    }
+    
+    .registration-type {
+        padding: 20px;
+    }
+    
+    .contact-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .contact-method {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .method-icon {
+        align-self: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .video_banner {
+        height: 30vh;
+    }
+    
+    .registration_section {
+        padding: 20px 10px;
+    }
+    
+    .registration_div {
+        padding: 20px 15px;
+        border-radius: 10px;
+    }
+    
+    #text1 {
+        font-size: 1.3rem;
+        padding: 8px 16px;
+        width: 95%;
+    }
+    
+    .form_full_box label {
+        font-size: 14px;
+    }
+    
+    select,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="tel"] {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    
+    .registerbtn {
+        padding: 14px;
+        font-size: 16px;
+    }
+    
+    .loginbtn {
+        width: 100%;
+        max-width: 200px;
+        padding: 14px;
+    }
+}
+</style>
+
+<script>
+// Validation functions
+function validateUsername() {
+    const username = document.getElementById('username').value;
+    const usernameStatus = document.getElementById('usernameStatus');
+    
+    if (!username) {
+        usernameStatus.className = 'validation-status validation-error';
+        usernameStatus.innerHTML = '✗ Username is required';
+        return false;
+    }
+    
+    if (username.length < 3) {
+        usernameStatus.className = 'validation-status validation-error';
+        usernameStatus.innerHTML = '✗ Username must be at least 3 characters';
+        return false;
+    }
+    
+    // Check if username contains only allowed characters
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(username)) {
+        usernameStatus.className = 'validation-status validation-error';
+        usernameStatus.innerHTML = '✗ Only letters, numbers, and underscores allowed';
+        return false;
+    }
+    
+    // Check for uniqueness against other fields
+    const studentId = document.getElementById('student_id').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    
+    if (username === studentId && studentId) {
+        usernameStatus.className = 'validation-status validation-error';
+        usernameStatus.innerHTML = '✗ Username cannot be same as Student ID';
+        return false;
+    }
+    
+    if (username === email && email) {
+        usernameStatus.className = 'validation-status validation-error';
+        usernameStatus.innerHTML = '✗ Username cannot be same as Email';
+        return false;
+    }
+    
+    if (username === phone && phone) {
+        usernameStatus.className = 'validation-status validation-error';
+        usernameStatus.innerHTML = '✗ Username cannot be same as Phone Number';
+        return false;
+    }
+    
+    usernameStatus.className = 'validation-status validation-valid';
+    usernameStatus.innerHTML = '✓ Username is available';
+    return true;
+}
+
+function validateName() {
+    const firstName = document.getElementById('first_name').value;
+    const lastName = document.getElementById('last_name').value;
+    const firstNameStatus = document.getElementById('firstNameStatus');
+    const lastNameStatus = document.getElementById('lastNameStatus');
+    
+    let firstNameValid = true;
+    let lastNameValid = true;
+    
+    // Validate first name
+    if (!firstName) {
+        firstNameStatus.className = 'validation-status validation-error';
+        firstNameStatus.innerHTML = '✗ First name is required';
+        firstNameValid = false;
+    } else if (firstName.length < 2) {
+        firstNameStatus.className = 'validation-status validation-error';
+        firstNameStatus.innerHTML = '✗ First name must be at least 2 characters';
+        firstNameValid = false;
+    } else {
+        firstNameStatus.className = 'validation-status validation-valid';
+        firstNameStatus.innerHTML = '✓ Valid first name';
+    }
+    
+    // Validate last name
+    if (!lastName) {
+        lastNameStatus.className = 'validation-status validation-error';
+        lastNameStatus.innerHTML = '✗ Last name is required';
+        lastNameValid = false;
+    } else if (lastName.length < 2) {
+        lastNameStatus.className = 'validation-status validation-error';
+        lastNameStatus.innerHTML = '✗ Last name must be at least 2 characters';
+        lastNameValid = false;
+    } else {
+        lastNameStatus.className = 'validation-status validation-valid';
+        lastNameStatus.innerHTML = '✓ Valid last name';
+    }
+    
+    return firstNameValid && lastNameValid;
+}
+
+function validateEmail() {
+    const email = document.getElementById('email').value;
+    const emailStatus = document.getElementById('emailStatus');
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    if (!email) {
+        emailStatus.className = 'validation-status validation-error';
+        emailStatus.innerHTML = '✗ Email is required';
+        return false;
+    }
+    
+    if (!emailRegex.test(email)) {
+        emailStatus.className = 'validation-status validation-error';
+        emailStatus.innerHTML = '✗ Please enter a valid email address';
+        return false;
+    }
+    
+    // Check for uniqueness against other fields
+    const username = document.getElementById('username').value;
+    const studentId = document.getElementById('student_id').value;
+    const phone = document.getElementById('phone').value;
+    
+    if (email === username && username) {
+        emailStatus.className = 'validation-status validation-error';
+        emailStatus.innerHTML = '✗ Email cannot be same as Username';
+        return false;
+    }
+    
+    if (email === studentId && studentId) {
+        emailStatus.className = 'validation-status validation-error';
+        emailStatus.innerHTML = '✗ Email cannot be same as Student ID';
+        return false;
+    }
+    
+    if (email === phone && phone) {
+        emailStatus.className = 'validation-status validation-error';
+        emailStatus.innerHTML = '✗ Email cannot be same as Phone Number';
+        return false;
+    }
+    
+    emailStatus.className = 'validation-status validation-valid';
+    emailStatus.innerHTML = '✓ Valid email format';
+    return true;
+}
+
+function validateStudentId() {
+    const studentId = document.getElementById('student_id').value;
+    const studentIdStatus = document.getElementById('studentIdStatus');
+    
+    if (!studentId) {
+        studentIdStatus.className = 'validation-status validation-error';
+        studentIdStatus.innerHTML = '✗ Student ID is required';
+        return false;
+    }
+    
+    if (studentId.length < 3) {
+        studentIdStatus.className = 'validation-status validation-error';
+        studentIdStatus.innerHTML = '✗ Student ID must be at least 3 characters';
+        return false;
+    }
+    
+    // Check for uniqueness against other fields
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    
+    if (studentId === username && username) {
+        studentIdStatus.className = 'validation-status validation-error';
+        studentIdStatus.innerHTML = '✗ Student ID cannot be same as Username';
+        return false;
+    }
+    
+    if (studentId === email && email) {
+        studentIdStatus.className = 'validation-status validation-error';
+        studentIdStatus.innerHTML = '✗ Student ID cannot be same as Email';
+        return false;
+    }
+    
+    if (studentId === phone && phone) {
+        studentIdStatus.className = 'validation-status validation-error';
+        studentIdStatus.innerHTML = '✗ Student ID cannot be same as Phone Number';
+        return false;
+    }
+    
+    studentIdStatus.className = 'validation-status validation-valid';
+    studentIdStatus.innerHTML = '✓ Valid student ID';
+    return true;
+}
+
+function validatePhone() {
+    const phone = document.getElementById('phone').value;
+    const phoneStatus = document.getElementById('phoneStatus');
+    
+    if (!phone) {
+        phoneStatus.className = 'validation-status';
+        return true; // Phone is optional
+    }
+    
+    // Bangladeshi phone number validation
+    const phoneRegex = /^(?:\+88|01)?\d{11}$/;
+    const cleanPhone = phone.replace(/\s+/g, '').replace('+88', '');
+    
+    if (!phoneRegex.test(cleanPhone)) {
+        phoneStatus.className = 'validation-status validation-error';
+        phoneStatus.innerHTML = '✗ Please enter a valid Bangladeshi phone number (11 digits)';
+        return false;
+    }
+    
+    // Check for uniqueness against other fields
+    const username = document.getElementById('username').value;
+    const studentId = document.getElementById('student_id').value;
+    const email = document.getElementById('email').value;
+    
+    if (phone === username && username) {
+        phoneStatus.className = 'validation-status validation-error';
+        phoneStatus.innerHTML = '✗ Phone cannot be same as Username';
+        return false;
+    }
+    
+    if (phone === studentId && studentId) {
+        phoneStatus.className = 'validation-status validation-error';
+        phoneStatus.innerHTML = '✗ Phone cannot be same as Student ID';
+        return false;
+    }
+    
+    if (phone === email && email) {
+        phoneStatus.className = 'validation-status validation-error';
+        phoneStatus.innerHTML = '✗ Phone cannot be same as Email';
+        return false;
+    }
+    
+    phoneStatus.className = 'validation-status validation-valid';
+    phoneStatus.innerHTML = '✓ Valid phone number';
+    return true;
+}
+
+function validateDepartment() {
+    const department = document.getElementById('department').value;
+    const departmentStatus = document.getElementById('departmentStatus');
+    
+    if (!department) {
+        departmentStatus.className = 'validation-status validation-error';
+        departmentStatus.innerHTML = '✗ Please select your department';
+        return false;
+    } else {
+        departmentStatus.className = 'validation-status validation-valid';
+        departmentStatus.innerHTML = '✓ Department selected';
+        return true;
+    }
+}
+
+function validateSession() {
+    const session = document.getElementById('session').value;
+    const sessionStatus = document.getElementById('sessionStatus');
+    const sessionRegex = /^\d{4}-\d{2}$/;
+    
+    if (!session) {
+        sessionStatus.className = 'validation-status validation-error';
+        sessionStatus.innerHTML = '✗ Academic session is required';
+        return false;
+    }
+    
+    if (sessionRegex.test(session)) {
+        sessionStatus.className = 'validation-status validation-valid';
+        sessionStatus.innerHTML = '✓ Valid session format';
+        return true;
+    } else {
+        sessionStatus.className = 'validation-status validation-error';
+        sessionStatus.innerHTML = '✗ Please use format: YYYY-YY (e.g., 2020-21)';
+        return false;
+    }
+}
+
+function validatePassword() {
+    const password = document.getElementById('password1').value;
+    const passwordStatus = document.getElementById('password1Status');
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    
+    if (!password) {
+        passwordStatus.className = 'validation-status validation-error';
+        passwordStatus.innerHTML = '✗ Password is required';
+        return false;
+    }
+    
+    if (passwordRegex.test(password)) {
+        passwordStatus.className = 'validation-status validation-valid';
+        passwordStatus.innerHTML = '✓ Strong password';
+        return true;
+    } else {
+        passwordStatus.className = 'validation-status validation-error';
+        passwordStatus.innerHTML = '✗ Must be 8+ chars with uppercase, lowercase, and number';
+        return false;
+    }
+}
+
+function validatePasswordMatch() {
+    const password1 = document.getElementById('password1').value;
+    const password2 = document.getElementById('password2').value;
+    const password2Status = document.getElementById('password2Status');
+    
+    if (!password2) {
+        password2Status.className = 'validation-status validation-error';
+        password2Status.innerHTML = '✗ Please confirm your password';
+        return false;
+    }
+    
+    if (password1 === password2) {
+        password2Status.className = 'validation-status validation-valid';
+        password2Status.innerHTML = '✓ Passwords match';
+        return true;
+    } else {
+        password2Status.className = 'validation-status validation-error';
+        password2Status.innerHTML = '✗ Passwords do not match';
+        return false;
+    }
+}
+
+function validateAllFields() {
+    const validations = [
+        validateUsername(),
+        validateName(),
+        validateEmail(),
+        validatePhone(),
+        validateStudentId(),
+        validateDepartment(),
+        validateSession(),
+        validatePassword(),
+        validatePasswordMatch()
+    ];
+    
+    return validations.every(validation => validation === true);
+}
+
+function validateCrossFieldUniqueness() {
+    const username = document.getElementById('username').value;
+    const studentId = document.getElementById('student_id').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    
+    const fields = [
+        {name: 'username', value: username},
+        {name: 'student_id', value: studentId},
+        {name: 'email', value: email},
+        {name: 'phone', value: phone}
+    ];
+    
+    let isValid = true;
+    let errorMessages = [];
+    
+    // Check for duplicate values
+    for (let i = 0; i < fields.length; i++) {
+        for (let j = i + 1; j < fields.length; j++) {
+            if (fields[i].value && fields[j].value && fields[i].value === fields[j].value) {
+                isValid = false;
+                errorMessages.push(`${fields[i].name.replace('_', ' ')} cannot be same as ${fields[j].name.replace('_', ' ')}`);
+            }
+        }
+    }
+    
+    if (!isValid) {
+        alert('Please fix the following issues:\n\n' + errorMessages.join('\n'));
+    }
+    
+    return isValid;
+}
+
+function toggleRegistrationType() {
+    const role = document.getElementById('role').value;
+    const studentRegistration = document.getElementById('studentRegistration');
+    const adminRegistration = document.getElementById('adminRegistration');
+    const submitButton = document.getElementById('submitButton');
+    const formActions = document.getElementById('formActions');
+    
+    // Hide all registration types first
+    studentRegistration.style.display = 'none';
+    adminRegistration.style.display = 'none';
+    formActions.style.display = 'block';
+    
+    // Show selected registration type
+    if (role === 'student') {
+        studentRegistration.style.display = 'block';
+        submitButton.textContent = 'Register as Student';
+        submitButton.style.display = 'block';
+    } else if (role === 'admin') {
+        adminRegistration.style.display = 'block';
+        submitButton.style.display = 'none'; // Hide submit button for admin
+    } else {
+        formActions.style.display = 'none';
+    }
+}
+
+// Form submission handler
+function handleFormSubmission(e) {
+    const role = document.getElementById('role').value;
+    
+    // Only validate for student registration
+    if (role === 'student') {
+        if (!validateAllFields()) {
+            e.preventDefault();
+            alert('Please fix all validation errors before submitting.');
+            return false;
+        }
+        
+        // Additional cross-field validation
+        if (!validateCrossFieldUniqueness()) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Add loading state
+        const btn = this.querySelector('.registerbtn');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering Student...';
+            btn.disabled = true;
+        }
+    } else if (role === 'admin') {
+        // Prevent form submission for admin (they need to contact administration)
+        e.preventDefault();
+        alert('For administrator accounts, please contact university administration using the provided contact information.');
+        return false;
+    } else {
+        e.preventDefault();
+        alert('Please select a role.');
+        return false;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize registration type based on current selection
+    toggleRegistrationType();
+    
+    const form = document.getElementById('registrationForm');
+
+    if (form) {
+        form.addEventListener('submit', handleFormSubmission);
+    }
+
+    // Mobile menu toggle functionality
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMenu = document.querySelector('nav ul');
+    
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Close mobile menu when clicking on links
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (menuToggle && navMenu) {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

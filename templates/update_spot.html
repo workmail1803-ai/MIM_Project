@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Tourist Spot - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<div class="title">
+    <h1>Update Tourist Spot</h1>
+    <p>Update the details of {{ spot.name }}</p>
+</div>
+
+<div class="modal" style="display: block; position: relative; background: transparent;">
+    <div class="modal-content">
+        <a href="{% url 'home' %}" class="close">&times;</a>
+        <h2>Update Tourist Spot</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_name">Spot Name:</label>
+                <input type="text" name="name" id="id_name" class="form-control" placeholder="Enter spot name" required value="{{ spot.name }}">
+                {% if form.name.errors %}
+                <div class="error" style="color: red; font-size: 14px; margin-top: 5px;">
+                    {{ form.name.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_image">Spot Image:</label>
+                <input type="file" name="image" id="id_image" class="form-control" accept="image/*">
+                {% if spot.image %}
+                <div style="margin-top: 10px;">
+                    <p style="margin-bottom: 5px; font-weight: 600;">Current Image:</p>
+                    <img src="{{ spot.image.url }}" alt="{{ spot.name }}" style="max-width: 200px; border-radius: 8px;">
+                </div>
+                {% endif %}
+                {% if form.image.errors %}
+                <div class="error" style="color: red; font-size: 14px; margin-top: 5px;">
+                    {{ form.image.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_description">Description:</label>
+                <textarea name="description" id="id_description" class="form-control" rows="5" placeholder="Enter description" required>{{ spot.description }}</textarea>
+                {% if form.description.errors %}
+                <div class="error" style="color: red; font-size: 14px; margin-top: 5px;">
+                    {{ form.description.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_highlights">Highlights (one per line):</label>
+                <textarea name="highlights" id="id_highlights" class="form-control" rows="4" placeholder="Enter highlights (one per line)">{{ spot.highlights|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_travel_info">Travel Information:</label>
+                <textarea name="travel_info" id="id_travel_info" class="form-control" rows="4" placeholder="Enter travel information">{{ spot.travel_info|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_best_time">Best Time to Visit:</label>
+                <textarea name="best_time" id="id_best_time" class="form-control" rows="3" placeholder="Enter best time to visit">{{ spot.best_time|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_safety_info">Safety Information:</label>
+                <textarea name="safety_info" id="id_safety_info" class="form-control" rows="3" placeholder="Enter safety information">{{ spot.safety_info|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="submit" class="btn packbtn">Update Spot</button>
+                <a href="{% url 'home' %}" class="btn cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        font-family: inherit;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #49a078;
+        box-shadow: 0 0 0 2px rgba(73, 160, 120, 0.2);
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    input[type="file"].form-control {
+        padding: 8px 15px;
+    }
+    
+    .error {
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+        padding: 5px 10px;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--secondary);
+        font-size: 16px;
+    }
+    
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        width: 90%;
+        max-width: 700px;
+        position: relative;
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    
+    .close:hover {
+        color: #000;
+    }
+    
+    .form-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        margin-top: 25px;
+    }
+    
+    .cancel-btn {
+        background-color: #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .cancel-btn:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .packbtn {
+        background: linear-gradient(135deg, var(--dark), var(--secondary));
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+    
+    .packbtn:hover {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(1, 39, 6, 0.3);
+    }
+
+    .title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .title h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 2.5rem;
+    }
+    
+    .title p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        const name = document.getElementById('id_name').value.trim();
+        const description = document.getElementById('id_description').value.trim();
+        
+        if (!name) {
+            e.preventDefault();
+            alert('Please enter a spot name.');
+            document.getElementById('id_name').focus();
+            return;
+        }
+        
+        if (!description) {
+            e.preventDefault();
+            alert('Please enter a description.');
+            document.getElementById('id_description').focus();
+            return;
+        }
+    });
+});
+</script>
+{% endblock %}
