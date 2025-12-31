@@ -1,43 +1,5 @@
-<<<<<<< HEAD
-# Python
-__pycache__/
 *.py[cod]
-*$py.class
-*.so
-
-# Virtual Environment
-venv/
-.venv/
-ENV/
-env/
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-
-# Static files (collected)
-staticfiles/
-
-# Media files (user uploads)
-media/
-
-# Environment variables
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-=======
-*.py[cod]
-*$py.class
+*.class
 __pycache__/
 *.so
 .Python
@@ -68,4 +30,3 @@ env/
 .DS_Store
 # media/
 staticfiles/
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
