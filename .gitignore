@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -34,3 +35,37 @@ media/
 # OS
 .DS_Store
 Thumbs.db
+=======
+*.py[cod]
+*$py.class
+__pycache__/
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+venv/
+ENV/
+env/
+db.sqlite3
+*.log
+.vscode/
+.idea/
+.DS_Store
+media/
+staticfiles/
+>>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b

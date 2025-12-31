@@ -1,6 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+<<<<<<< HEAD
+=======
+from .models import ContactMessage
+>>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
 import re
 
 class CustomUserCreationForm(UserCreationForm):
@@ -99,4 +103,44 @@ class StudyTourBookingForm(forms.ModelForm):
                 'rows': 3, 
                 'placeholder': 'Any special requirements or dietary restrictions...'
             }),
+<<<<<<< HEAD
+=======
+        }
+
+
+class ContactMessageForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['first_name', 'last_name', 'email', 'phone', 'subject', 'message']
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your first name',
+                'required': True
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your last name',
+                'required': True
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your email address',
+                'required': True
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your phone number (optional)'
+            }),
+            'subject': forms.Select(attrs={
+                'class': 'form-control',
+                'required': True
+            }),
+            'message': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 6,
+                'placeholder': 'Tell us about your inquiry...',
+                'required': True
+            }),
+>>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
         }

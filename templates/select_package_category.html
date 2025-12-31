@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Select Package Category - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 20px; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="color: var(--dark); margin-bottom: 15px; font-size: 2.5rem;">
+            <i class="fas fa-plus-circle" style="color: var(--primary);"></i> Add New Package
+        </h1>
+        <p style="color: #666; font-size: 1.2rem;">Select a category to add your package</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto;">
+        <!-- Study Tour Category -->
+        <a href="{% url 'add_package' %}?category=study_tour" style="text-decoration: none;">
+            <div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)';">
+                <div style="height: 180px; background: linear-gradient(135deg, #4CAF50, #2E7D32); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-graduation-cap" style="font-size: 70px; color: white; opacity: 0.9;"></i>
+                </div>
+                <div style="padding: 25px; text-align: center;">
+                    <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.4rem;">Study Tour Package</h3>
+                    <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Educational tours for students to explore and learn from different places</p>
+                    <div style="margin-top: 20px;">
+                        <span style="background: #e8f5e9; color: #2E7D32; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                            <i class="fas fa-plus"></i> Add Study Tour
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Cycling Category -->
+        <a href="{% url 'add_package' %}?category=cycling" style="text-decoration: none;">
+            <div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)';">
+                <div style="height: 180px; background: linear-gradient(135deg, #2196F3, #1565C0); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-bicycle" style="font-size: 70px; color: white; opacity: 0.9;"></i>
+                </div>
+                <div style="padding: 25px; text-align: center;">
+                    <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.4rem;">Cycling Package</h3>
+                    <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Adventure cycling tours and marathon events for cycling enthusiasts</p>
+                    <div style="margin-top: 20px;">
+                        <span style="background: #e3f2fd; color: #1565C0; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                            <i class="fas fa-plus"></i> Add Cycling
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- University Programs Category -->
+        <a href="{% url 'add_package' %}?category=university_program" style="text-decoration: none;">
+            <div style="background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)';">
+                <div style="height: 180px; background: linear-gradient(135deg, #FF9800, #EF6C00); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-university" style="font-size: 70px; color: white; opacity: 0.9;"></i>
+                </div>
+                <div style="padding: 25px; text-align: center;">
+                    <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.4rem;">University Program</h3>
+                    <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Professional development programs and university events</p>
+                    <div style="margin-top: 20px;">
+                        <span style="background: #fff3e0; color: #EF6C00; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                            <i class="fas fa-plus"></i> Add Program
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="{% url 'home' %}" style="color: #666; text-decoration: none; font-size: 1rem;">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+</section>
+{% endblock %}

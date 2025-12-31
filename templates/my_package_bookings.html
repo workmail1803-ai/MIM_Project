@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Package Bookings - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<section class="my-bookings-section" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto;">
+    <h1 style="color: var(--dark); margin-bottom: 30px; text-align: center;">
+        <i class="fas fa-bell"></i> My Booking Notifications
+    </h1>
+    
+    {% if messages %}
+    <div style="max-width: 800px; margin: 0 auto 20px;">
+        {% for message in messages %}
+        <div class="alert" style="padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; {% if message.tags == 'success' %}background: #d4edda; color: #155724; border: 1px solid #c3e6cb;{% elif message.tags == 'error' %}background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;{% else %}background: #fff3cd; color: #856404; border: 1px solid #ffeeba;{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if bookings %}
+    <div class="bookings-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px;">
+        {% for booking in bookings %}
+        <div class="booking-card" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); {% if booking.status == 'approved' and not booking.student_notified %}border: 3px solid var(--primary); animation: glow-green 2s ease-in-out infinite;{% elif booking.status == 'rejected' and not booking.student_notified %}border: 3px solid #dc3545; animation: glow-red 2s ease-in-out infinite;{% endif %}">
+            <div class="booking-header" style="padding: 20px; background: {% if booking.status == 'approved' %}var(--primary){% elif booking.status == 'pending' %}#ffc107{% elif booking.status == 'rejected' %}#dc3545{% else %}#6c757d{% endif %}; color: white;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 1.2rem;">{{ booking.package.name }}</h3>
+                    <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; text-transform: uppercase;">
+                        {% if booking.status == 'approved' %}
+                        <i class="fas fa-check-circle"></i> Approved
+                        {% elif booking.status == 'rejected' %}
+                        <i class="fas fa-times-circle"></i> Rejected
+                        {% elif booking.status == 'pending' %}
+                        <i class="fas fa-clock"></i> Pending
+                        {% else %}
+                        <i class="fas fa-ban"></i> {{ booking.status }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Status Message -->
+            {% if booking.status == 'approved' %}
+            <div style="background: #d4edda; color: #155724; padding: 15px 20px; border-bottom: 1px solid #c3e6cb;">
+                <i class="fas fa-check-circle"></i> <strong>Great news!</strong> Your booking has been approved by admin. Get ready for your trip!
+            </div>
+            {% elif booking.status == 'rejected' %}
+            <div style="background: #f8d7da; color: #721c24; padding: 15px 20px; border-bottom: 1px solid #f5c6cb;">
+                <i class="fas fa-times-circle"></i> <strong>Unfortunately</strong>, your booking has been rejected. 
+                {% if booking.admin_notes %}See admin's note below.{% else %}Please contact admin for details.{% endif %}
+            </div>
+            {% elif booking.status == 'pending' %}
+            <div style="background: #fff3cd; color: #856404; padding: 15px 20px; border-bottom: 1px solid #ffeeba;">
+                <i class="fas fa-hourglass-half"></i> <strong>Waiting for approval</strong>. Admin will review your booking soon.
+            </div>
+            {% endif %}
+            
+            <div class="booking-body" style="padding: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <small style="color: #999;">Destination</small>
+                        <p style="margin: 0; color: #333; font-weight: 500;">{{ booking.package.destination }}</p>
+                    </div>
+                    <div>
+                        <small style="color: #999;">Duration</small>
+                        <p style="margin: 0; color: #333; font-weight: 500;">{{ booking.package.duration }}</p>
+                    </div>
+                    <div>
+                        <small style="color: #999;">Persons</small>
+                        <p style="margin: 0; color: #333; font-weight: 500;">{{ booking.num_persons }}</p>
+                    </div>
+                    <div>
+                        <small style="color: #999;">Total Price</small>
+                        <p style="margin: 0; color: var(--primary); font-weight: 700;">৳{{ booking.package.price|floatformat:0 }}</p>
+                    </div>
+                </div>
+                
+                <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                    <small style="color: #999;">Booked on</small>
+                    <p style="margin: 0; color: #666;">{{ booking.created_at|date:"F j, Y, g:i a" }}</p>
+                </div>
+                
+                <!-- Payment Section (Show only for approved bookings) -->
+                {% if booking.status == 'approved' %}
+                <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #2196F3;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <small style="color: #1976D2; font-weight: 600;"><i class="fas fa-credit-card"></i> Payment Status</small>
+                        <button type="button" onclick="openPaymentModal({{ booking.id }})" style="background: #2196F3; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                            <i class="fas fa-plus"></i> Add Payment
+                        </button>
+                    </div>
+                    <div id="payment-info-{{ booking.id }}" style="font-size: 0.9rem;">
+                        <p style="margin: 5px 0; color: #666;">Loading payment status...</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if booking.admin_notes %}
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid {% if booking.status == 'rejected' %}#dc3545{% else %}var(--primary){% endif %};">
+                    <small style="color: #666; display: block; margin-bottom: 5px;"><i class="fas fa-comment-alt"></i> Admin's Note:</small>
+                    <p style="margin: 0; color: #333;">{{ booking.admin_notes }}</p>
+                </div>
+                {% endif %}
+                
+                {% if booking.status == 'pending' %}
+                <div style="margin-top: 20px;">
+                    <a href="{% url 'cancel_package_booking' booking.id %}" onclick="return confirm('Are you sure you want to cancel this booking?');" style="display: block; text-align: center; padding: 10px; background: #dc3545; color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                        <i class="fas fa-times"></i> Cancel Booking
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 15px; max-width: 600px; margin: 0 auto;">
+        <i class="fas fa-calendar-times" style="font-size: 60px; color: #ccc; margin-bottom: 20px;"></i>
+        <h3 style="color: #666; margin-bottom: 10px;">No Bookings Yet</h3>
+        <p style="color: #999; margin-bottom: 20px;">You haven't made any package bookings yet.</p>
+        <a href="{% url 'packages' %}" style="display: inline-block; background: var(--primary); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            <i class="fas fa-suitcase-rolling"></i> Browse Packages
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+    @keyframes glow-green {
+        0%, 100% { box-shadow: 0 0 5px rgba(41, 163, 92, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(41, 163, 92, 0.8); }
+    }
+    
+    @keyframes glow-red {
+        0%, 100% { box-shadow: 0 0 5px rgba(220, 53, 69, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(220, 53, 69, 0.8); }
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+        padding: 20px;
+        background: var(--primary);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+    }
+    
+    .close-modal {
+        font-size: 28px;
+        font-weight: bold;
+        color: white;
+        cursor: pointer;
+        border: none;
+        background: none;
+    }
+    
+    .close-modal:hover {
+        opacity: 0.7;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(41, 163, 92, 0.1);
+    }
+    
+    .progress-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .progress-bar-container {
+        background: #e0e0e0;
+        border-radius: 10px;
+        height: 20px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .progress-bar {
+        background: var(--primary);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    
+    .modal-footer {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+    
+    .btn-secondary {
+        background: #ddd;
+        color: #333;
+    }
+    
+    .btn-secondary:hover {
+        opacity: 0.8;
+    }
+    
+    .error-message {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 5px;
+        display: none;
+    }
+    
+    .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: none;
+    }
+</style>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-credit-card"></i> Submit Payment</h3>
+            <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="success-message" id="successMsg">
+                <i class="fas fa-check-circle"></i> Payment submitted successfully!
+            </div>
+            
+            <div class="progress-info" id="progressInfo" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span><strong>Amount Paid:</strong></span>
+                    <span id="amountPaid">৳0</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
+                </div>
+                <div style="font-size: 0.85rem; color: #666; text-align: center;">
+                    <span id="progressText">৳0 / ৳0</span>
+                </div>
+            </div>
+            
+            <form id="paymentForm" onsubmit="submitPayment(event)">
+                {% csrf_token %}
+                <input type="hidden" id="bookingId" value="">
+                
+                <div class="form-group">
+                    <label for="amountPaidInput">Amount Paid (৳)</label>
+                    <input type="number" id="amountPaidInput" name="amount_paid" placeholder="Enter amount in Taka" step="0.01" min="0" required>
+                    <span class="error-message" id="amountError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bkashLastFour">bKash Last 4 Digits</label>
+                    <input type="text" id="bkashLastFour" name="bkash_last_4" placeholder="e.g., 1234" maxlength="4" pattern="[0-9]{4}" required>
+                    <span class="error-message" id="bkashError"></span>
+                    <small style="color: #666; display: block; margin-top: 5px;">Enter the last 4 digits of your bKash number</small>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Submit Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPaymentModal(bookingId) {
+    document.getElementById('paymentModal').style.display = 'block';
+    document.getElementById('bookingId').value = bookingId;
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('paymentForm').reset();
+    document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+    
+    // Load payment info
+    loadPaymentInfo(bookingId);
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+}
+
+function loadPaymentInfo(bookingId) {
+    fetch(`{% url 'get_booking_payment' 0 %}`.replace('0', bookingId))
+        .then(response => response.json())
+        .then(data => {
+            const progressInfo = document.getElementById('progressInfo');
+            if (data.has_payment) {
+                progressInfo.style.display = 'block';
+                const totalPrice = data.total_price;
+                const amountPaid = data.amount_paid;
+                const percentage = (amountPaid / totalPrice * 100).toFixed(1);
+                
+                document.getElementById('amountPaid').textContent = `৳${amountPaid.toFixed(2)}`;
+                document.getElementById('progressBar').style.width = percentage + '%';
+                document.getElementById('progressBar').textContent = percentage + '%';
+                document.getElementById('progressText').textContent = `৳${amountPaid.toFixed(2)} / ৳${totalPrice.toFixed(2)}`;
+                
+                document.getElementById('amountPaidInput').value = amountPaid;
+                document.getElementById('bkashLastFour').value = data.bkash_last_4;
+            } else {
+                progressInfo.style.display = 'none';
+            }
+        });
+}
+
+function submitPayment(event) {
+    event.preventDefault();
+    
+    const bookingId = document.getElementById('bookingId').value;
+    const amountPaid = document.getElementById('amountPaidInput').value;
+    const bkashLastFour = document.getElementById('bkashLastFour').value;
+    
+    // Clear errors
+    document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+    
+    const formData = new FormData();
+    formData.append('amount_paid', amountPaid);
+    formData.append('bkash_last_4', bkashLastFour);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch(`{% url 'submit_payment' 0 %}`.replace('0', bookingId), {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('paymentForm').style.display = 'none';
+            
+            setTimeout(() => {
+                closePaymentModal();
+                location.reload();
+            }, 2000);
+        } else {
+            if (data.details) {
+                if (data.details.amount_paid) {
+                    document.getElementById('amountError').textContent = data.details.amount_paid[0];
+                    document.getElementById('amountError').style.display = 'block';
+                }
+                if (data.details.bkash_last_4) {
+                    document.getElementById('bkashError').textContent = data.details.bkash_last_4[0];
+                    document.getElementById('bkashError').style.display = 'block';
+                }
+            }
+        }
+    })
+    .catch(error => {
+        alert('Error submitting payment: ' + error);
+    });
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('paymentModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Load payment info for all approved bookings on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const bookingElements = document.querySelectorAll('[id^="payment-info-"]');
+    bookingElements.forEach(element => {
+        const bookingId = element.id.replace('payment-info-', '');
+        fetch(`{% url 'get_booking_payment' 0 %}`.replace('0', bookingId))
+            .then(response => response.json())
+            .then(data => {
+                let html = '';
+                if (data.has_payment) {
+                    const totalPrice = data.total_price;
+                    const amountPaid = data.amount_paid;
+                    const remaining = data.remaining_amount;
+                    const percentage = (amountPaid / totalPrice * 100).toFixed(1);
+                    
+                    html = `
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="color: #666;">Paid: <strong>৳${amountPaid.toFixed(2)}</strong></span>
+                                <span style="color: #666;">Remaining: <strong style="color: var(--primary);">৳${remaining.toFixed(2)}</strong></span>
+                            </div>
+                            <div style="background: #e0e0e0; border-radius: 10px; height: 15px; overflow: hidden;">
+                                <div style="background: var(--primary); height: 100%; width: ${percentage}%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; font-weight: bold;">
+                                    ${percentage}%
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background: #e3f2fd; padding: 8px 12px; border-radius: 5px; font-size: 0.85rem;">
+                            <strong style="color: #1976D2;">Status:</strong> <span style="color: ${data.status === 'verified' ? '#4CAF50' : data.status === 'rejected' ? '#f44336' : '#FFC107'}">${data.status === 'pending' ? 'Pending Verification' : data.status === 'verified' ? 'Verified' : 'Rejected'}</span>
+                        </div>
+                    `;
+                } else {
+                    html = `<p style="margin: 0; color: #999; font-style: italic;">No payment submitted yet</p>`;
+                }
+                element.innerHTML = html;
+            });
+    });
+});
+</script>
+{% endblock %}
