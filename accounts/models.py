@@ -81,9 +81,6 @@ class StudyTourBooking(models.Model):
             'partial': 'info',
             'refunded': 'secondary'
         }
-<<<<<<< HEAD
-        return payment_colors.get(self.payment_status, 'secondary')
-=======
         return payment_colors.get(self.payment_status, 'secondary')
 
 
@@ -121,4 +118,3 @@ class ContactMessage(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
