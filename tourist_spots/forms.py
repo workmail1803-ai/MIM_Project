@@ -1,5 +1,5 @@
 from django import forms
-from .models import TouristSpot, TourPackage, PackageBooking, Payment
+from .models import TouristSpot, TourPackage, PackageBooking, Payment, TravelRequest
 
 class TouristSpotForm(forms.ModelForm):
     class Meta:
@@ -190,3 +190,53 @@ class PaymentForm(forms.ModelForm):
             raise forms.ValidationError('bKash number must be exactly 4 digits.')
         
         return cleaned_data
+
+
+class TravelRequestForm(forms.ModelForm):
+    """Form for students to request a travel place"""
+    class Meta:
+        model = TravelRequest
+        fields = ['place_name', 'location', 'description', 'preferred_date', 'number_of_travelers', 'budget_estimate', 'special_requirements']
+        widgets = {
+            'place_name': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter the place you want to visit',
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;'
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'e.g., Sylhet, Bangladesh',
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 4, 
+                'placeholder': 'Describe why you want to visit this place and what activities you would like to do',
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; resize: vertical;'
+            }),
+            'preferred_date': forms.DateInput(attrs={
+                'class': 'form-control', 
+                'type': 'date',
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;'
+            }),
+            'number_of_travelers': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'min': 1,
+                'max': 50,
+                'value': 1,
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;'
+            }),
+            'budget_estimate': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Estimated budget per person (BDT)',
+                'step': '100',
+                'min': '0',
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;'
+            }),
+            'special_requirements': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3, 
+                'placeholder': 'Any special requirements or requests (optional)',
+                'style': 'width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; resize: vertical;'
+            }),
+        }

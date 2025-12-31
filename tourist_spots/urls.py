@@ -47,4 +47,12 @@ urlpatterns = [
     path('message/read/<int:message_id>/', views.mark_message_read, name='mark_message_read'),
     path('message/replied/<int:message_id>/', views.mark_message_replied, name='mark_message_replied'),
     path('message/delete/<int:message_id>/', views.delete_contact_message, name='delete_message'),
+    
+    # Travel Request URLs
+    path('travel-request/submit/', views.submit_travel_request, name='submit_travel_request'),
+    path('travel-request/my-requests/', views.my_travel_requests, name='my_travel_requests'),
+    path('travel-request/admin/', views.admin_travel_requests, name='admin_travel_requests'),
+    path('travel-request/approve/<int:request_id>/', views.approve_travel_request, name='approve_travel_request'),
+    path('travel-request/reject/<int:request_id>/', views.reject_travel_request, name='reject_travel_request'),
+    path('travel-request/delete/<int:request_id>/', views.delete_travel_request, name='delete_travel_request'),
 ]

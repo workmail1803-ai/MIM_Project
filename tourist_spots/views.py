@@ -625,3 +625,154 @@ def delete_contact_message(request, message_id):
     message.delete()
     messages.success(request, 'Message deleted successfully.')
     return redirect('contact')
+
+
+# ============== Travel Request Views ==============
+
+@login_required
+def submit_travel_request(request):
+    """Student submits a travel place request"""
+    from .forms import TravelRequestForm
+    from .models import TravelRequest
+    
+    if request.method == 'POST':
+        form = TravelRequestForm(request.POST)
+        if form.is_valid():
+            travel_request = form.save(commit=False)
+            travel_request.user = request.user
+            travel_request.save()
+            messages.success(request, '✅ Your travel request has been submitted successfully! An admin will review it soon.')
+            return redirect('my_travel_requests')
+        else:
+            messages.error(request, '❌ Please correct the errors below.')
+    else:
+        form = TravelRequestForm()
+    
+    return render(request, 'travel_request_form.html', {'form': form})
+
+
+@login_required
+def my_travel_requests(request):
+    """View student's own travel requests"""
+    from .models import TravelRequest
+    
+    requests = TravelRequest.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Count statistics
+    pending_count = requests.filter(status='pending').count()
+    approved_count = requests.filter(status='approved').count()
+    rejected_count = requests.filter(status='rejected').count()
+    
+    return render(request, 'my_travel_requests.html', {
+        'travel_requests': requests,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+    })
+
+
+@login_required
+def admin_travel_requests(request):
+    """Admin view to manage all travel requests"""
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'Permission denied. Admin access required.')
+        return redirect('home')
+    
+    from .models import TravelRequest
+    
+    status_filter = request.GET.get('status', '')
+    search_query = request.GET.get('search', '')
+    
+    requests = TravelRequest.objects.all().select_related('user').order_by('-created_at')
+    
+    if status_filter:
+        requests = requests.filter(status=status_filter)
+    
+    if search_query:
+        requests = requests.filter(
+            models.Q(place_name__icontains=search_query) |
+            models.Q(location__icontains=search_query) |
+            models.Q(user__username__icontains=search_query) |
+            models.Q(user__first_name__icontains=search_query)
+        )
+    
+    # Count statistics
+    total_count = TravelRequest.objects.count()
+    pending_count = TravelRequest.objects.filter(status='pending').count()
+    approved_count = TravelRequest.objects.filter(status='approved').count()
+    rejected_count = TravelRequest.objects.filter(status='rejected').count()
+    
+    return render(request, 'admin_travel_requests.html', {
+        'travel_requests': requests,
+        'total_count': total_count,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+        'status_filter': status_filter,
+        'search_query': search_query,
+    })
+
+
+@login_required
+def approve_travel_request(request, request_id):
+    """Admin approves a travel request"""
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'Permission denied.')
+        return redirect('home')
+    
+    from .models import TravelRequest
+    
+    travel_request = get_object_or_404(TravelRequest, id=request_id)
+    
+    if request.method == 'POST':
+        admin_response = request.POST.get('admin_response', '')
+        travel_request.status = 'approved'
+        travel_request.admin_response = admin_response
+        travel_request.save()
+        messages.success(request, f'✅ Travel request for "{travel_request.place_name}" has been approved!')
+    
+    return redirect('admin_travel_requests')
+
+
+@login_required
+def reject_travel_request(request, request_id):
+    """Admin rejects a travel request"""
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'Permission denied.')
+        return redirect('home')
+    
+    from .models import TravelRequest
+    
+    travel_request = get_object_or_404(TravelRequest, id=request_id)
+    
+    if request.method == 'POST':
+        admin_response = request.POST.get('admin_response', '')
+        travel_request.status = 'rejected'
+        travel_request.admin_response = admin_response
+        travel_request.save()
+        messages.success(request, f'❌ Travel request for "{travel_request.place_name}" has been rejected.')
+    
+    return redirect('admin_travel_requests')
+
+
+@login_required
+def delete_travel_request(request, request_id):
+    """Delete a travel request (admin or owner)"""
+    from .models import TravelRequest
+    
+    travel_request = get_object_or_404(TravelRequest, id=request_id)
+    
+    # Check permission - admin or owner can delete
+    if not (request.user.is_staff or request.user.is_superuser or request.user == travel_request.user):
+        messages.error(request, 'Permission denied.')
+        return redirect('home')
+    
+    if request.method == 'POST':
+        place_name = travel_request.place_name
+        travel_request.delete()
+        messages.success(request, f'Travel request for "{place_name}" has been deleted.')
+    
+    # Redirect based on user type
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('admin_travel_requests')
+    return redirect('my_travel_requests')

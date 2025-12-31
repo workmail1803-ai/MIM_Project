@@ -114,3 +114,42 @@ class Payment(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class TravelRequest(models.Model):
+    """Model for students to request travel places for admin approval"""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='travel_requests')
+    place_name = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    description = models.TextField(help_text="Describe why you want to visit this place")
+    preferred_date = models.DateField(null=True, blank=True)
+    number_of_travelers = models.PositiveIntegerField(default=1)
+    budget_estimate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    special_requirements = models.TextField(blank=True)
+    
+    # Status fields
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_response = models.TextField(blank=True, help_text="Admin's response or notes")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.place_name} ({self.status})"
+    
+    def get_status_badge(self):
+        status_colors = {
+            'pending': 'warning',
+            'approved': 'success',
+            'rejected': 'danger',
+        }
+        return status_colors.get(self.status, 'secondary')
