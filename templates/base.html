@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -180,19 +181,27 @@
             align-items: center;
             transition: transform 0.3s ease;
         }
-        
+
         .notification-bell:hover {
             transform: scale(1.1);
         }
-        
+
         .notification-badge {
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .messages {
@@ -241,7 +250,7 @@
             .menu-toggle {
                 display: flex;
             }
-            
+
             nav ul {
                 position: fixed;
                 top: 89px;
@@ -255,20 +264,20 @@
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             }
-            
+
             nav ul.active {
                 transform: translateY(0);
                 opacity: 1;
                 visibility: visible;
             }
-            
+
             .header-content {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             nav ul {
                 flex-direction: column;
                 gap: 10px;
@@ -277,6 +286,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="header">
@@ -285,13 +295,13 @@
                     <img src="{% static 'images/logo.svg' %}" alt="Wond'rNEUB Logo">
                     <h1>Wond'rNEUB</h1>
                 </div>
-                
+
                 <button class="menu-toggle">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                
+
                 <nav>
                     <ul>
                         <li><a href="{% url 'home' %}">Home</a></li>
@@ -301,33 +311,19 @@
                         <li><a href="{% url 'contact' %}">Contact</a></li>
                     </ul>
                 </nav>
-                
+
                 <div class="buttons">
                     {% if user.is_authenticated %}
-                        {% if user.is_staff or user.is_superuser %}
-                        <a href="{% url 'admin_package_bookings' %}" class="notification-bell" style="position: relative; color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;">
-                            <i class="fas fa-bell"></i>
-                            {% if pending_bookings_count > 0 %}
-                            <span class="notification-badge" style="position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; min-width: 18px; text-align: center;">{{ pending_bookings_count }}</span>
-                            {% endif %}
-                        </a>
-                        {% else %}
-                        <a href="{% url 'my_package_bookings' %}" class="notification-bell" style="position: relative; color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;">
-                            <i class="fas fa-bell"></i>
-                            {% if student_notifications_count > 0 %}
-                            <span class="notification-badge" style="position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; min-width: 18px; text-align: center;">{{ student_notifications_count }}</span>
-                            {% endif %}
-                        </a>
-                        {% endif %}
-                        <form method="POST" action="{% url 'custom_logout' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="loginbutton" style="background: none; border: 2px solid white; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: larger;">
-                                Logout
-                            </button>
-                        </form>
+                    <form method="POST" action="{% url 'custom_logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="loginbutton"
+                            style="background: none; border: 2px solid white; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: larger;">
+                            Logout
+                        </button>
+                    </form>
                     {% else %}
-                        <a href="{% url 'login' %}" class="loginbutton">Login</a>
-                        <a href="{% url 'register' %}" class="regbutton">Register</a>
+                    <a href="{% url 'login' %}" class="loginbutton">Login</a>
+                    <a href="{% url 'register' %}" class="regbutton">Register</a>
                     {% endif %}
                 </div>
             </div>
@@ -365,20 +361,20 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.querySelector('.menu-toggle');
             const navMenu = document.querySelector('nav ul');
-            
+
             if (menuToggle && navMenu) {
-                menuToggle.addEventListener('click', function() {
+                menuToggle.addEventListener('click', function () {
                     this.classList.toggle('active');
                     navMenu.classList.toggle('active');
                 });
             }
-            
+
             // Close mobile menu when clicking on links
             document.querySelectorAll('nav a').forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function () {
                     if (window.innerWidth <= 768) {
                         menuToggle.classList.remove('active');
                         navMenu.classList.remove('active');
@@ -388,4 +384,5 @@
         });
     </script>
 </body>
+
 </html>

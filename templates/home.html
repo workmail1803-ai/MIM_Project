@@ -180,7 +180,7 @@
 <!-- Packages Section (ONLY ONE) -->
 <section class="packages">
     <div class="packages-grid">
-        <a href="{% url 'study_tour_packages' %}" class="package-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+        <div class="package-card">
             <div class="package-img" style="background-image: url('{% static 'images/studytour.jpg' %}');"></div>
             <div class="package-content">
                 <h3>Study Tour Package</h3>
@@ -190,8 +190,8 @@
                     <span><i class="fas fa-tag"></i> Educational</span>
                 </div>
             </div>
-        </a>
-        <a href="{% url 'cycling_packages' %}" class="package-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+        </div>
+        <div class="package-card">
             <div class="package-img" style="background-image: url('{% static 'images/rideimg.jpg' %}')"></div>
             <div class="package-content">
                 <h3>Cycling Packages</h3>
@@ -201,9 +201,9 @@
                     <span><i class="fas fa-tag"></i> Affordable</span>
                 </div>
             </div>
-        </a>
+        </div>
         
-        <a href="{% url 'university_program_packages' %}" class="package-card" style="text-decoration: none; color: inherit; cursor: pointer;">
+        <div class="package-card">
             <div class="package-img" style="background-image: url('{% static 'images/program.jpg' %}');"></div>
             <div class="package-content">
                 <h3>University Programs</h3>
@@ -213,7 +213,7 @@
                     <span><i class="fas fa-tag"></i> Professional</span>
                 </div>
             </div>
-        </a>
+        </div>
     </div>
 </section>
 

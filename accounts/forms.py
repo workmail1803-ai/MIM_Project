@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import ContactMessage
+from .models import ContactMessage, StudyTourBooking
 import re
 
 class CustomUserCreationForm(UserCreationForm):
@@ -85,10 +85,7 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
             
         return user
-    
-    #packages.html ar forms.py
-    from django import forms
-from .models import StudyTourBooking
+
 
 class StudyTourBookingForm(forms.ModelForm):
     class Meta:

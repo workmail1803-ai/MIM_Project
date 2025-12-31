@@ -1,7 +1,5 @@
 from django.urls import path, include
 from django.contrib import admin
-from django.conf import settings
-from django.conf.urls.static import static
 from accounts.views import CustomLoginView, home, about, contact, travel_history, register, custom_logout
 from accounts.views import study_tour_detail, book_study_tour, booking_confirmation, my_bookings, cancel_booking
 from accounts.views import admin_booking_management, approve_booking, pending_booking, cancel_booking_admin
@@ -48,7 +46,3 @@ urlpatterns = [
     path('tourist-spots/', include('tourist_spots.urls')),
     path('tourist-spots/', tourist_spots, name='tourist_spots'),
 ]
-
-# Serve media files during development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

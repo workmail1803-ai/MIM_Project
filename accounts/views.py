@@ -480,23 +480,3 @@ def update_booking_status(request, booking_id):
             messages.error(request, f'Booking #{booking_id} not found.')
     
     return redirect('admin_booking_management')
-@login_required
-@user_passes_test(is_admin)
-def restore_booking(request, booking_id):
-    """Restore a cancelled booking"""
-    if request.method == 'POST':
-        try:
-            booking = StudyTourBooking.objects.get(id=booking_id)
-            booking.status = 'pending'
-            booking.save()
-            
-            # Use a slot
-            if booking.tour_date.available_slots > 0:
-                booking.tour_date.available_slots -= 1
-                booking.tour_date.save()
-            
-            messages.success(request, f'Booking #{booking_id} has been restored to pending status.')
-        except StudyTourBooking.DoesNotExist:
-            messages.error(request, f'Booking #{booking_id} not found.')
-    
-    return redirect('admin_booking_management')
