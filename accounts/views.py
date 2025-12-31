@@ -7,8 +7,8 @@ from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
-from .forms import CustomUserCreationForm
-from .models import StudyTour, TourDate, TourInclusion, StudyTourBooking
+from .forms import CustomUserCreationForm, ContactMessageForm
+from .models import StudyTour, TourDate, TourInclusion, StudyTourBooking, ContactMessage
 
 # Custom Login View
 class CustomLoginView(LoginView):
@@ -56,8 +56,70 @@ def about(request):
     return render(request, 'about.html')
 
 def contact(request):
-    """Contact page view"""
-    return render(request, 'contact.html')
+    """Contact page view - Admin sees messages, Students/Users can send messages"""
+    # Admin users see the message inbox
+    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+        contact_messages = ContactMessage.objects.all()
+        unread_count = contact_messages.filter(status='unread').count()
+        return render(request, 'contact.html', {
+            'contact_messages': contact_messages,
+            'unread_count': unread_count,
+            'is_admin_view': True
+        })
+    
+    # Students/Users see the contact form
+    if request.method == 'POST':
+        form = ContactMessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            if request.user.is_authenticated:
+                message.user = request.user
+            message.save()
+            messages.success(request, '✅ Your message has been sent successfully! We will get back to you within 24 hours.')
+            return redirect('contact')
+        else:
+            messages.error(request, '❌ Please correct the errors below.')
+    else:
+        # Pre-fill form for logged-in users
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data = {
+                'first_name': request.user.first_name or request.user.username,
+                'last_name': request.user.last_name or '',
+                'email': request.user.email,
+            }
+        form = ContactMessageForm(initial=initial_data)
+    
+    return render(request, 'contact.html', {
+        'form': form,
+        'is_admin_view': False
+    })
+
+@staff_member_required
+def mark_message_read(request, message_id):
+    """Mark a contact message as read"""
+    message = get_object_or_404(ContactMessage, id=message_id)
+    message.status = 'read'
+    message.save()
+    messages.success(request, 'Message marked as read.')
+    return redirect('contact')
+
+@staff_member_required
+def mark_message_replied(request, message_id):
+    """Mark a contact message as replied"""
+    message = get_object_or_404(ContactMessage, id=message_id)
+    message.status = 'replied'
+    message.save()
+    messages.success(request, 'Message marked as replied.')
+    return redirect('contact')
+
+@staff_member_required
+def delete_message(request, message_id):
+    """Delete a contact message"""
+    message = get_object_or_404(ContactMessage, id=message_id)
+    message.delete()
+    messages.success(request, 'Message deleted successfully.')
+    return redirect('contact')
 
 def tourist_spots(request):
     """Tourist spots page view"""

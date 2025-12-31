@@ -173,6 +173,28 @@
             padding: 10px 20px;
         }
 
+        /* Notification Bell Styles */
+        .notification-bell {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+        
+        .notification-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
         .messages {
             padding: 20px;
             margin: 20px 0;
@@ -282,6 +304,21 @@
                 
                 <div class="buttons">
                     {% if user.is_authenticated %}
+                        {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'admin_package_bookings' %}" class="notification-bell" style="position: relative; color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;">
+                            <i class="fas fa-bell"></i>
+                            {% if pending_bookings_count > 0 %}
+                            <span class="notification-badge" style="position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; min-width: 18px; text-align: center;">{{ pending_bookings_count }}</span>
+                            {% endif %}
+                        </a>
+                        {% else %}
+                        <a href="{% url 'my_package_bookings' %}" class="notification-bell" style="position: relative; color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;">
+                            <i class="fas fa-bell"></i>
+                            {% if student_notifications_count > 0 %}
+                            <span class="notification-badge" style="position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; min-width: 18px; text-align: center;">{{ student_notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                        {% endif %}
                         <form method="POST" action="{% url 'custom_logout' %}" style="display: inline;">
                             {% csrf_token %}
                             <button type="submit" class="loginbutton" style="background: none; border: 2px solid white; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: larger;">

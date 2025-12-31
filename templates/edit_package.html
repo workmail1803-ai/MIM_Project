@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Tour Package - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<section class="edit-package-section" style="padding: 40px 20px; max-width: 800px; margin: 0 auto;">
+    <div class="form-container" style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+        <h1 style="color: var(--primary); margin-bottom: 30px; text-align: center;">
+            <i class="fas fa-edit"></i> Edit Tour Package
+        </h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                    <i class="fas fa-tag"></i> Package Name *
+                </label>
+                {{ form.name }}
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_destination" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                    <i class="fas fa-map-marker-alt"></i> Destination *
+                </label>
+                {{ form.destination }}
+            </div>
+            
+            <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="id_price" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                        <i class="fas fa-money-bill-wave"></i> Price (BDT) *
+                    </label>
+                    {{ form.price }}
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="id_duration" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                        <i class="fas fa-clock"></i> Duration *
+                    </label>
+                    {{ form.duration }}
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_description" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                    <i class="fas fa-align-left"></i> Description *
+                </label>
+                {{ form.description }}
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_highlights" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                    <i class="fas fa-star"></i> Highlights
+                </label>
+                {{ form.highlights }}
+            </div>
+            
+            {% if package.image %}
+            <div class="current-image" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Current Image:</label>
+                <img src="{{ package.image.url }}" alt="{{ package.name }}" style="max-width: 200px; border-radius: 8px;">
+            </div>
+            {% endif %}
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_image" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                    <i class="fas fa-image"></i> New Image (optional)
+                </label>
+                {{ form.image }}
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                {{ form.is_active }}
+                <label for="id_is_active" style="font-weight: 600; color: #333; cursor: pointer;">
+                    Active (visible to users)
+                </label>
+            </div>
+            
+            <div class="form-actions" style="display: flex; gap: 15px; justify-content: center;">
+                <button type="submit" style="background: var(--primary); color: white; padding: 12px 40px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-save"></i> Update Package
+                </button>
+                <a href="{% url 'packages' %}" style="background: #6c757d; color: white; padding: 12px 40px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

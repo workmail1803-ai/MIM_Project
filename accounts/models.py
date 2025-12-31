@@ -82,3 +82,39 @@ class StudyTourBooking(models.Model):
             'refunded': 'secondary'
         }
         return payment_colors.get(self.payment_status, 'secondary')
+
+
+class ContactMessage(models.Model):
+    SUBJECT_CHOICES = [
+        ('booking', 'Trip Booking'),
+        ('information', 'General Information'),
+        ('complaint', 'Complaint'),
+        ('suggestion', 'Suggestion'),
+        ('other', 'Other'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('unread', 'Unread'),
+        ('read', 'Read'),
+        ('replied', 'Replied'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
+    message = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='unread')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.get_subject_display()}"
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
