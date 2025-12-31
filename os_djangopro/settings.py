@@ -7,8 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY: Use environment variable for SECRET_KEY in production
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-change-in-production')
 
-# SECURITY: Set DEBUG to False in production
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+# SECURITY: Set DEBUG to False in production (defaults to True for local development)
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 # SECURITY: Add your Railway domain and localhost
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')

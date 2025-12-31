@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if study_tour %}{{ study_tour.name }} - Wond'r NEUB{% else %}Study Tour Package - Wond'r NEUB{%
-endif %}{% endblock %}
+{% block title %}{% if study_tour %}{{ study_tour.name }} - Wond'r NEUB{% else %}Study Tour Package - Wond'r NEUB{% endif %}{% endblock %}
 
 {% block content %}
 <!-- Add database error warning -->
@@ -40,8 +39,7 @@ endif %}{% endblock %}
 <!-- Study Tour Section -->
 <section class="study_tour_section">
     <div class="study_tour_div">
-        <h1 id="text1">{% if study_tour %}{{ study_tour.name }}{% else %}Academic Study Tour: Sylhet Exploration{% endif
-            %}</h1>
+        <h1 id="text1">{% if study_tour %}{{ study_tour.name }}{% else %}Academic Study Tour: Sylhet Exploration{% endif             %}</h1>
 
         <div class="tour_content">
             <div class="tour_main_content">
@@ -179,10 +177,8 @@ endif %}{% endblock %}
                     {% endif %}
 
                     <div class="price_section">
-                        <div class="price_original">BDT {% if study_tour %}{{ study_tour.original_price }}{% else
-                            %}8,500{% endif %}</div>
-                        <div class="price_current">BDT {% if study_tour %}{{ study_tour.discounted_price }}{% else
-                            %}6,800{% endif %}</div>
+                        <div class="price_original">BDT {% if study_tour %}{{ study_tour.original_price }}{% else                             %}8,500{% endif %}</div>
+                        <div class="price_current">BDT {% if study_tour %}{{ study_tour.discounted_price }}{% else                             %}6,800{% endif %}</div>
                         <div class="discount_badge">Student Discount {% if study_tour %}{{
                             study_tour.discount_percentage }}{% else %}20{% endif %}%</div>
                         <div class="price_note">Per student (all inclusive)</div>
@@ -244,8 +240,7 @@ endif %}{% endblock %}
                                 placeholder="Any dietary restrictions, medical conditions, or special requests..."
                                 style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
                         </div>
-                        <button type="submit" class="bookbtn" id="bookButton" {% if database_error %}disabled{% endif
-                            %}>
+                        <button type="submit" class="bookbtn" id="bookButton" {% if database_error %}disabled{% endif                             %}>
                             {% if database_error %}System Setup in Progress{% else %}Book This Study Tour{% endif %}
                         </button>
                     </form>
@@ -256,8 +251,7 @@ endif %}{% endblock %}
                     </a>
                     {% endif %}
 
-                    <p class="booking_note">Limited to {% if study_tour %}{{ study_tour.max_students }}{% else %}25{%
-                        endif %} students per tour. Early booking recommended.</p>
+                    <p class="booking_note">Limited to {% if study_tour %}{{ study_tour.max_students }}{% else %}25{%                         endif %} students per tour. Early booking recommended.</p>
 
                     <div class="academic_credit">
                         <i class="fas fa-award"></i>
