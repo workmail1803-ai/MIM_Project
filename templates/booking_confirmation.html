@@ -5,11 +5,7 @@
 
 {% block content %}
 <div class="video_banner">
-<<<<<<< HEAD
-    <img src="{% static 'images/study-tour-banner.jpg' %}" alt="Study Tour Banner">
-=======
     <img src="{% static 'images/studytour.jpg' %}" alt="Study Tour Banner">
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
 </div>
 
 <div class="confirmation_section">
@@ -17,16 +13,17 @@
         <div class="success_icon">
             <i class="fas fa-check-circle"></i>
         </div>
-        
+
         <h1>Booking Confirmed! 🎉</h1>
-        
+
         <div class="booking_details">
             <h2>Your Study Tour Details</h2>
             <div class="detail_item">
                 <strong>Tour:</strong> {{ booking.study_tour.name }}
             </div>
             <div class="detail_item">
-                <strong>Date:</strong> {{ booking.tour_date.start_date|date:"F j, Y" }} - {{ booking.tour_date.end_date|date:"F j, Y" }}
+                <strong>Date:</strong> {{ booking.tour_date.start_date|date:"F j, Y" }} - {{
+                booking.tour_date.end_date|date:"F j, Y" }}
             </div>
             <div class="detail_item">
                 <strong>Total Price:</strong> BDT {{ booking.total_price }}
@@ -40,7 +37,7 @@
             </div>
             {% endif %}
         </div>
-        
+
         <div class="next_steps">
             <h3>What Happens Next?</h3>
             <ul>
@@ -50,7 +47,7 @@
                 <li>Prepare your student ID for verification</li>
             </ul>
         </div>
-        
+
         <div class="action_buttons">
             <a href="{% url 'packages' %}" class="btn_primary">Book Another Tour</a>
             <a href="{% url 'home' %}" class="btn_secondary">Return to Home</a>
@@ -59,127 +56,128 @@
 </div>
 
 <style>
-.confirmation_section {
-    padding: 50px 20px;
-    background-color: var(--background);
-    min-height: 80vh;
-}
+    .confirmation_section {
+        padding: 50px 20px;
+        background-color: var(--background);
+        min-height: 80vh;
+    }
 
-.confirmation_div {
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+    .confirmation_div {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
 
-.success_icon {
-    font-size: 4rem;
-    color: var(--primary);
-    margin-bottom: 20px;
-}
+    .success_icon {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+    }
 
-.confirmation_div h1 {
-    color: var(--primary);
-    margin-bottom: 30px;
-}
+    .confirmation_div h1 {
+        color: var(--primary);
+        margin-bottom: 30px;
+    }
 
-.booking_details {
-    background: #f0f9f4;
-    padding: 25px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    text-align: left;
-}
+    .booking_details {
+        background: #f0f9f4;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
 
-.booking_details h2 {
-    color: var(--primary);
-    margin-bottom: 20px;
-    text-align: center;
-}
+    .booking_details h2 {
+        color: var(--primary);
+        margin-bottom: 20px;
+        text-align: center;
+    }
 
-.detail_item {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #ddd;
-}
+    .detail_item {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+    }
 
-.detail_item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
+    .detail_item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
 
-.next_steps {
-    background: #fff3cd;
-    padding: 25px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    text-align: left;
-}
+    .next_steps {
+        background: #fff3cd;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
 
-.next_steps h3 {
-    color: #856404;
-    margin-bottom: 15px;
-    text-align: center;
-}
+    .next_steps h3 {
+        color: #856404;
+        margin-bottom: 15px;
+        text-align: center;
+    }
 
-.next_steps ul {
-    list-style: none;
-    padding: 0;
-}
+    .next_steps ul {
+        list-style: none;
+        padding: 0;
+    }
 
-.next_steps li {
-    margin-bottom: 10px;
-    padding-left: 25px;
-    position: relative;
-}
+    .next_steps li {
+        margin-bottom: 10px;
+        padding-left: 25px;
+        position: relative;
+    }
 
-.next_steps li:before {
-    content: "✓";
-    color: var(--primary);
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-}
+    .next_steps li:before {
+        content: "✓";
+        color: var(--primary);
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
 
-.action_buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+    .action_buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
-.btn_primary, .btn_secondary {
-    padding: 12px 25px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
+    .btn_primary,
+    .btn_secondary {
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
 
-.btn_primary {
-    background: var(--primary);
-    color: white;
-}
+    .btn_primary {
+        background: var(--primary);
+        color: white;
+    }
 
-.btn_primary:hover {
-    background: var(--dark);
-    transform: translateY(-2px);
-}
+    .btn_primary:hover {
+        background: var(--dark);
+        transform: translateY(-2px);
+    }
 
-.btn_secondary {
-    background: transparent;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-}
+    .btn_secondary {
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
 
-.btn_secondary:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-2px);
-}
+    .btn_secondary:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+    }
 </style>
 
 {% endblock %}

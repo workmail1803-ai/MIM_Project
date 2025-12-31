@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 python-3.11.7
-=======
-python-3.11.7
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b

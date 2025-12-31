@@ -32,14 +32,11 @@ urlpatterns = [
     path('admin/bookings/restore-all-cancelled/', views.restore_all_cancelled, name='restore_all_cancelled'),
     path('admin/bookings/update-status/<int:booking_id>/', views.update_booking_status, name='update_booking_status'),
     
-<<<<<<< HEAD
-=======
     # Contact Message Management URLs
     path('message/read/<int:message_id>/', views.mark_message_read, name='mark_message_read'),
     path('message/replied/<int:message_id>/', views.mark_message_replied, name='mark_message_replied'),
     path('message/delete/<int:message_id>/', views.delete_message, name='delete_message'),
     
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
     # API URLs
     path('api/available-slots/<int:date_id>/', views.get_available_slots, name='get_available_slots'),
     

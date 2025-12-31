@@ -7,13 +7,8 @@ from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
-<<<<<<< HEAD
-from .forms import CustomUserCreationForm
-from .models import StudyTour, TourDate, TourInclusion, StudyTourBooking
-=======
 from .forms import CustomUserCreationForm, ContactMessageForm
 from .models import StudyTour, TourDate, TourInclusion, StudyTourBooking, ContactMessage
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
 
 # Custom Login View
 class CustomLoginView(LoginView):
@@ -61,10 +56,6 @@ def about(request):
     return render(request, 'about.html')
 
 def contact(request):
-<<<<<<< HEAD
-    """Contact page view"""
-    return render(request, 'contact.html')
-=======
     """Contact page view - Admin sees messages, Students/Users can send messages"""
     # Admin users see the message inbox
     if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
@@ -129,7 +120,6 @@ def delete_message(request, message_id):
     message.delete()
     messages.success(request, 'Message deleted successfully.')
     return redirect('contact')
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
 
 def tourist_spots(request):
     """Tourist spots page view"""
@@ -486,26 +476,6 @@ def update_booking_status(request, booking_id):
             else:
                 messages.error(request, 'Invalid status.')
                 
-        except StudyTourBooking.DoesNotExist:
-            messages.error(request, f'Booking #{booking_id} not found.')
-    
-    return redirect('admin_booking_management')
-@login_required
-@user_passes_test(is_admin)
-def restore_booking(request, booking_id):
-    """Restore a cancelled booking"""
-    if request.method == 'POST':
-        try:
-            booking = StudyTourBooking.objects.get(id=booking_id)
-            booking.status = 'pending'
-            booking.save()
-            
-            # Use a slot
-            if booking.tour_date.available_slots > 0:
-                booking.tour_date.available_slots -= 1
-                booking.tour_date.save()
-            
-            messages.success(request, f'Booking #{booking_id} has been restored to pending status.')
         except StudyTourBooking.DoesNotExist:
             messages.error(request, f'Booking #{booking_id} not found.')
     

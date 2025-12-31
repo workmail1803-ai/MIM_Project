@@ -1,10 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-<<<<<<< HEAD
-=======
-from .models import ContactMessage
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
+from .models import ContactMessage, StudyTourBooking
 import re
 
 class CustomUserCreationForm(UserCreationForm):
@@ -88,10 +85,7 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
             
         return user
-    
-    #packages.html ar forms.py
-    from django import forms
-from .models import StudyTourBooking
+
 
 class StudyTourBookingForm(forms.ModelForm):
     class Meta:
@@ -103,8 +97,6 @@ class StudyTourBookingForm(forms.ModelForm):
                 'rows': 3, 
                 'placeholder': 'Any special requirements or dietary restrictions...'
             }),
-<<<<<<< HEAD
-=======
         }
 
 
@@ -142,5 +134,4 @@ class ContactMessageForm(forms.ModelForm):
                 'placeholder': 'Tell us about your inquiry...',
                 'required': True
             }),
->>>>>>> 8285cce6a191abaf75b1fadd294c45bd74ca133b
         }
