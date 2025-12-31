@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Student - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <div class="contact-header">
+        <h1>✉️ Contact Student</h1>
+        <p>Send a message to the student about their booking</p>
+    </div>
+
+    <div class="contact-content">
+        <div class="student-info-card">
+            <h3>Student Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Student Name:</strong>
+                    <span>{{ booking.user.get_full_name|default:booking.user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Email Address:</strong>
+                    <span id="studentEmail">{{ booking.user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Booking Reference:</strong>
+                    <span>#{{ booking.id }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Tour:</strong>
+                    <span>{{ booking.study_tour.name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form-card">
+            <h3>Compose Message</h3>
+            <form method="POST" id="contactForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="subject">Email Subject *</label>
+                    <input type="text" id="subject" name="subject" 
+                           value="Regarding Your Study Tour Booking #{{ booking.id }}"
+                           class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Your Message *</label>
+                    <textarea id="message" name="message" rows="8" class="form-control" required>Dear {{ booking.user.get_full_name|default:booking.user.username }},
+
+I am writing to you regarding your study tour booking #{{ booking.id }} for "{{ booking.study_tour.name }}".
+
+Best regards,
+Wond'r NEUB Team</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Send Email
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="openEmailClient()">
+                        <i class="fas fa-external-link-alt"></i> Open Email Client
+                    </button>
+                    <a href="{% url 'admin_booking_management' %}" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+
+                <div class="email-status" id="emailStatus">
+                    <span class="status-valid">✅ Ready to send email</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.contact-header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.contact-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.student-info-card, .contact-form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.student-info-card h3, .contact-form-card h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 10px;
+}
+
+.info-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item strong {
+    color: #2c3e50;
+}
+
+.info-item span {
+    color: #7f8c8d;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #3498db;
+    color: #3498db;
+}
+
+.btn-outline:hover {
+    background: #3498db;
+    color: white;
+}
+
+.email-status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.status-valid {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.status-error {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.status-info {
+    color: #3498db;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-container {
+        padding: 15px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+</style>
+
+<script>
+function openEmailClient() {
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    const email = '{{ booking.user.email }}';
+    
+    // Create mailto link
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    
+    // Try to open email client
+    try {
+        window.location.href = mailtoLink;
+    } catch (e) {
+        // Fallback: open in new window
+        window.open(mailtoLink, '_blank');
+    }
+}
+
+// Form submission handling
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    const subject = document.getElementById('subject').value.trim();
+    const message = document.getElementById('message').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('emailStatus');
+    
+    // Basic validation
+    if (!subject || !message) {
+        e.preventDefault();
+        statusDiv.innerHTML = '<span class="status-error">❌ Please fill in both subject and message</span>';
+        return false;
+    }
+    
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    submitBtn.disabled = true;
+    statusDiv.innerHTML = '<span class="status-info">⏳ Sending email...</span>';
+    
+    // Allow form to submit normally
+    return true;
+});
+
+// Real-time validation
+document.getElementById('message').addEventListener('input', function() {
+    const status = document.getElementById('emailStatus');
+    if (this.value.trim().length > 10) {
+        status.innerHTML = '<span class="status-valid">✅ Ready to send email</span>';
+    } else {
+        status.innerHTML = '<span class="status-error">❌ Please write a longer message</span>';
+    }
+});
+
+// Initialize status
+document.addEventListener('DOMContentLoaded', function() {
+    const message = document.getElementById('message').value.trim();
+    const status = document.getElementById('emailStatus');
+    
+    if (message.length > 10) {
+        status.innerHTML = '<span class="status-valid">✅ Ready to send email</span>';
+    }
+});
+</script>
+{% endblock %}

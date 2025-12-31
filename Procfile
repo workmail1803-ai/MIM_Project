@@ -1,0 +1,1 @@
+web: gunicorn os_djangopro.wsgi

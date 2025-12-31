@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - Wond'r NEUB{% endblock %}
+
+{% block content %}
+<div class="video_banner">
+    <img src="{% static 'images/study-tour-banner.jpg' %}" alt="Study Tour Banner">
+</div>
+
+<div class="bookings_section">
+    <div class="bookings_container">
+        <h1 class="page_title">My Study Tour Bookings</h1>
+        
+        <!-- Status Filter -->
+        <div class="filter_section">
+            <label>Filter by Status:</label>
+            <select onchange="location = this.value;" class="status_filter">
+                <option value="{% url 'my_bookings' %}" {% if not status_filter %}selected{% endif %}>All Bookings</option>
+                <option value="{% url 'my_bookings' %}?status=pending" {% if status_filter == 'pending' %}selected{% endif %}>⏳ Pending</option>
+                <option value="{% url 'my_bookings' %}?status=confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>✅ Confirmed</option>
+                <option value="{% url 'my_bookings' %}?status=cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                <option value="{% url 'my_bookings' %}?status=completed" {% if status_filter == 'completed' %}selected{% endif %}>🎉 Completed</option>
+            </select>
+        </div>
+
+        {% if bookings %}
+        <div class="bookings_grid">
+            {% for booking in bookings %}
+            <div class="booking_card {% if booking.status == 'cancelled' %}cancelled{% endif %}">
+                <div class="booking_header">
+                    <h3>{{ booking.study_tour.name }}</h3>
+                    <div class="booking_status">
+                        <span class="status-badge status-{{ booking.get_status_badge }}">
+                            {{ booking.get_status_display }}
+                        </span>
+                        <span class="payment-badge payment-{{ booking.get_payment_badge }}">
+                            {{ booking.get_payment_status_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="booking_details">
+                    <div class="detail_row">
+                        <strong>Tour Date:</strong>
+                        <span>{{ booking.tour_date.start_date|date:"M j, Y" }} - {{ booking.tour_date.end_date|date:"M j, Y" }}</span>
+                    </div>
+                    <div class="detail_row">
+                        <strong>Booking Date:</strong>
+                        <span>{{ booking.booking_date|date:"M j, Y" }}</span>
+                    </div>
+                    <div class="detail_row">
+                        <strong>Total Price:</strong>
+                        <span class="price">BDT {{ booking.total_price }}</span>
+                    </div>
+                    {% if booking.special_requirements %}
+                    <div class="detail_row">
+                        <strong>Your Requirements:</strong>
+                        <span>{{ booking.special_requirements }}</span>
+                    </div>
+                    {% endif %}
+                    {% if booking.admin_notes %}
+                    <div class="detail_row">
+                        <strong>Admin Notes:</strong>
+                        <span class="admin-notes">{{ booking.admin_notes }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="booking_actions">
+                    {% if booking.status == 'pending' %}
+                    <form method="POST" action="{% url 'cancel_booking' booking.id %}" class="cancel_form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                            Cancel Booking
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if booking.status == 'confirmed' %}
+                    <div class="confirmed_note">
+                        <i class="fas fa-check-circle"></i>
+                        Your booking is confirmed! Our coordinator will contact you.
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.status == 'completed' %}
+                    <div class="completed_note">
+                        <i class="fas fa-star"></i>
+                        Tour completed! We hope you had a great experience.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no_bookings">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No Bookings Found</h3>
+            <p>You haven't made any study tour bookings yet.</p>
+            <a href="{% url 'packages' %}" class="btn btn-primary">Browse Study Tours</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.bookings_section {
+    padding: 50px 20px;
+    background-color: var(--background);
+    min-height: 80vh;
+}
+
+.bookings_container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page_title {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+.filter_section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.filter_section label {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.status_filter {
+    padding: 8px 15px;
+    border: 2px solid var(--primary);
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+}
+
+.bookings_grid {
+    display: grid;
+    gap: 20px;
+}
+
+.booking_card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--primary);
+    transition: transform 0.3s ease;
+}
+
+.booking_card:hover {
+    transform: translateY(-2px);
+}
+
+.booking_card.cancelled {
+    opacity: 0.7;
+    border-left-color: #dc3545;
+}
+
+.booking_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.booking_header h3 {
+    color: var(--dark);
+    margin: 0;
+    flex: 1;
+}
+
+.booking_status {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.status-badge, .payment-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-success { background: #d1edff; color: #0c5460; }
+.status-danger { background: #f8d7da; color: #721c24; }
+.status-info { background: #d1ecf1; color: #0c5460; }
+.status-secondary { background: #e2e3e5; color: #383d41; }
+
+.payment-pending { background: #fff3cd; color: #856404; }
+.payment-success { background: #d4edda; color: #155724; }
+.payment-info { background: #cce7ff; color: #004085; }
+.payment-secondary { background: #e2e3e5; color: #383d41; }
+
+.booking_details {
+    margin-bottom: 20px;
+}
+
+.detail_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.detail_row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.detail_row strong {
+    color: var(--dark);
+    min-width: 150px;
+}
+
+.price {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.1em;
+}
+
+.admin-notes {
+    color: #666;
+    font-style: italic;
+}
+
+.booking_actions {
+    border-top: 2px solid #f0f0f0;
+    padding-top: 20px;
+}
+
+.cancel_form {
+    margin: 0;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 12px 25px;
+}
+
+.btn-primary:hover {
+    background: var(--dark);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.confirmed_note, .completed_note {
+    background: #d4edda;
+    color: #155724;
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.completed_note {
+    background: #cce7ff;
+    color: #004085;
+}
+
+.no_bookings {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.no_bookings i {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.no_bookings h3 {
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.no_bookings p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .booking_header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .detail_row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .detail_row strong {
+        min-width: auto;
+    }
+    
+    .booking_status {
+        justify-content: flex-start;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,973 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if study_tour %}{{ study_tour.name }} - Wond'r NEUB{% else %}Study Tour Package - Wond'r NEUB{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Add database error warning -->
+{% if database_error %}
+<div class="alert alert-warning" style="margin: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; text-align: center;">
+    <strong>Notice:</strong> The booking system is currently being set up. You can view the tour details, but booking functionality will be available soon.
+</div>
+{% endif %}
+
+<!-- Video Banner -->
+<section class="video_banner">
+    <img src="{% static 'images/study-tour-banner.jpg' %}" alt="Study Tour Banner">
+</section>
+
+<!-- User Actions Bar -->
+{% if user.is_authenticated %}
+<div class="user-actions-bar">
+    <div class="actions-container">
+        <a href="{% url 'my_bookings' %}" class="my-bookings-btn">
+            <i class="fas fa-list-alt"></i>
+            My Bookings ({{ user.studytourbooking_set.count }})
+        </a>
+        {% if user.is_staff %}
+        <a href="{% url 'admin_booking_management' %}" class="admin-bookings-btn">
+            <i class="fas fa-cog"></i>
+            Manage All Bookings
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Study Tour Section -->
+<section class="study_tour_section">
+    <div class="study_tour_div">
+        <h1 id="text1">{% if study_tour %}{{ study_tour.name }}{% else %}Academic Study Tour: Sylhet Exploration{% endif %}</h1>
+        
+        <div class="tour_content">
+            <div class="tour_main_content">
+                <div class="content_section">
+                    <h2><i class="fas fa-info-circle"></i> About This Study Tour</h2>
+                    <p>{% if study_tour %}{{ study_tour.description }}{% else %}This specially designed academic tour takes NEUB students through the beautiful region of Sylhet, combining educational visits with cultural experiences. The program includes visits to tea gardens, research centers, and historical sites relevant to various academic disciplines.{% endif %}</p>
+                    
+                    <div class="highlight_box">
+                        <h3>Academic Focus Areas:</h3>
+                        <ul>
+                            <li><i class="fas fa-leaf"></i> Environmental Science & Tea Cultivation</li>
+                            <li><i class="fas fa-chart-line"></i> Business & Tourism Management</li>
+                            <li><i class="fas fa-landmark"></i> Cultural Studies & History</li>
+                            <li><i class="fas fa-seedling"></i> Agricultural Research</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content_section">
+                    <h2><i class="fas fa-map-marked-alt"></i> Tour Itinerary</h2>
+                    <div class="itinerary">
+                        {% if itineraries %}
+                            {% for itinerary in itineraries %}
+                            <div class="day_plan">
+                                <h3>Day {{ itinerary.day_number }}: {{ itinerary.title }}</h3>
+                                <ul>
+                                    {% for activity in itinerary.activities.all %}
+                                    <li><strong>{{ activity.time_period }}:</strong> {{ activity.activity }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Default itinerary if no database data -->
+                            <div class="day_plan">
+                                <h3>Day 1: Arrival & Orientation</h3>
+                                <ul>
+                                    <li><strong>Morning:</strong> Depart from NEUB Campus, travel to Sylhet</li>
+                                    <li><strong>Afternoon:</strong> Check into Jatra Flagship Sylhet, orientation session</li>
+                                    <li><strong>Evening:</strong> Welcome dinner and academic briefing</li>
+                                </ul>
+                            </div>
+                            <div class="day_plan">
+                                <h3>Day 2: Educational Visits</h3>
+                                <ul>
+                                    <li><strong>Morning:</strong> Visit to Malnichara Tea Garden with expert guide</li>
+                                    <li><strong>Afternoon:</strong> Research session at Tea Research Institute</li>
+                                    <li><strong>Evening:</strong> Group discussion and academic reflection</li>
+                                </ul>
+                            </div>
+                            <div class="day_plan">
+                                <h3>Day 3: Cultural Exploration & Return</h3>
+                                <ul>
+                                    <li><strong>Morning:</strong> Visit to Shah Jalal Dargah and historical sites</li>
+                                    <li><strong>Afternoon:</strong> Academic wrap-up session, travel back to campus</li>
+                                    <li><strong>Evening:</strong> Arrival at NEUB, tour conclusion</li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="content_section">
+                    <h2><i class="fas fa-home"></i> Accommodation Details</h2>
+                    <div class="accommodation_info">
+                        <h3>Jatra Flagship Sylhet City Center</h3>
+                        <p>Comfortable student accommodation with academic-friendly facilities:</p>
+                        <div class="facilities_grid">
+                            <div class="facility">
+                                <i class="fas fa-wifi"></i>
+                                <span>Free WiFi</span>
+                            </div>
+                            <div class="facility">
+                                <i class="fas fa-utensils"></i>
+                                <span>Restaurant</span>
+                            </div>
+                            <div class="facility">
+                                <i class="fas fa-users"></i>
+                                <span>Group Study Areas</span>
+                            </div>
+                            <div class="facility">
+                                <i class="fas fa-shuttle-van"></i>
+                                <span>Transport Access</span>
+                            </div>
+                            <div class="facility">
+                                <i class="fas fa-concierge-bell"></i>
+                                <span>24/7 Support</span>
+                            </div>
+                            <div class="facility">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure Campus</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content_section">
+                    <h2><i class="fas fa-graduation-cap"></i> Learning Outcomes</h2>
+                    <ul class="outcomes_list">
+                        <li>Understanding of tea cultivation and processing methods</li>
+                        <li>Exposure to agricultural research methodologies</li>
+                        <li>Cultural awareness and historical context of Sylhet region</li>
+                        <li>Development of observational and research skills</li>
+                        <li>Enhanced group collaboration and academic discussion</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="booking_sidebar">
+                <div class="booking_card">
+                    <!-- Quick Bookings Overview for logged-in users -->
+                    {% if user.is_authenticated and user.studytourbooking_set.exists %}
+                    <div class="quick-bookings-overview">
+                        <h4><i class="fas fa-history"></i> Your Recent Bookings</h4>
+                        <div class="bookings-list-mini">
+                            {% for booking in user.studytourbooking_set.all|slice:":3" %}
+                            <div class="mini-booking-item">
+                                <div class="mini-booking-date">
+                                    {{ booking.tour_date.start_date|date:"M j" }}
+                                </div>
+                                <div class="mini-booking-status status-{{ booking.status }}">
+                                    {{ booking.status|title }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'my_bookings' %}" class="view-all-bookings">
+                            View All Bookings →
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="price_section">
+                        <div class="price_original">BDT {% if study_tour %}{{ study_tour.original_price }}{% else %}8,500{% endif %}</div>
+                        <div class="price_current">BDT {% if study_tour %}{{ study_tour.discounted_price }}{% else %}6,800{% endif %}</div>
+                        <div class="discount_badge">Student Discount {% if study_tour %}{{ study_tour.discount_percentage }}{% else %}20{% endif %}%</div>
+                        <div class="price_note">Per student (all inclusive)</div>
+                    </div>
+
+                    <div class="booking_dates">
+                        <h4><i class="fas fa-calendar-alt"></i> Select Tour Date:</h4>
+                        <select class="date_select" id="tourDateSelect">
+                            {% if tour_dates %}
+                                {% for date in tour_dates %}
+                                <option value="{{ date.id }}" data-slots="{{ date.available_slots }}">
+                                    {{ date.start_date|date:"F j" }} - {{ date.end_date|date:"j, Y" }} 
+                                    ({{ date.available_slots }} slots left)
+                                </option>
+                                {% endfor %}
+                            {% else %}
+                                <!-- Default dates if no database data -->
+                                <option value="1">November 15-17, 2025</option>
+                                <option value="2">December 6-8, 2025</option>
+                                <option value="3">January 10-12, 2026</option>
+                                <option value="4">February 14-16, 2026</option>
+                            {% endif %}
+                        </select>
+                        <div id="slotsInfo" class="slots-info" style="margin-top: 10px; font-size: 0.9rem; color: var(--primary);"></div>
+                    </div>
+
+                    <div class="inclusions">
+                        <h4><i class="fas fa-check-circle"></i> Package Includes:</h4>
+                        <ul>
+                            {% if inclusions %}
+                                {% for inclusion in inclusions %}
+                                <li><i class="{{ inclusion.icon_class }}"></i> {{ inclusion.name }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <!-- Default inclusions if no database data -->
+                                <li><i class="fas fa-check"></i> Transportation (round trip)</li>
+                                <li><i class="fas fa-check"></i> Accommodation (2 nights)</li>
+                                <li><i class="fas fa-check"></i> All meals during tour</li>
+                                <li><i class="fas fa-check"></i> Educational site entries</li>
+                                <li><i class="fas fa-check"></i> Expert academic guides</li>
+                                <li><i class="fas fa-check"></i> Study materials</li>
+                                <li><i class="fas fa-check"></i> Travel insurance</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <form method="POST" action="{% url 'book_study_tour' %}" id="bookingForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="study_tour" value="{% if study_tour %}{{ study_tour.id }}{% else %}1{% endif %}">
+                            <input type="hidden" name="tour_date" id="selectedTourDate" value="">
+                            <div class="special-requirements" style="margin-bottom: 15px;">
+                                <label for="special_requirements" style="display: block; margin-bottom: 5px; font-weight: bold;">Special Requirements:</label>
+                                <textarea name="special_requirements" id="special_requirements" rows="3" 
+                                          placeholder="Any dietary restrictions, medical conditions, or special requests..." 
+                                          style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                            </div>
+                            <button type="submit" class="bookbtn" id="bookButton" {% if database_error %}disabled{% endif %}>
+                                {% if database_error %}System Setup in Progress{% else %}Book This Study Tour{% endif %}
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="bookbtn" style="text-decoration: none; display: block; text-align: center;">
+                            Login to Book
+                        </a>
+                    {% endif %}
+                    
+                    <p class="booking_note">Limited to {% if study_tour %}{{ study_tour.max_students }}{% else %}25{% endif %} students per tour. Early booking recommended.</p>
+
+                    <div class="academic_credit">
+                        <i class="fas fa-award"></i>
+                        <span>Eligible for academic credit (consult your department)</span>
+                    </div>
+                </div>
+
+                <div class="support_info">
+                    <h4><i class="fas fa-headset"></i> Need Help?</h4>
+                    <p>Contact our academic travel coordinators:</p>
+                    <div class="contact_item">
+                        <i class="fas fa-phone"></i>
+                        <span>+880 1234 567890</span>
+                    </div>
+                    <div class="contact_item">
+                        <i class="fas fa-envelope"></i>
+                        <span>tours@wondrneub.edu.bd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Messages Display -->
+{% if messages %}
+<div class="messages-container" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" style="min-width: 300px;">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<style>
+:root {
+    --primary: #29a35c;
+    --secondary: #2d5e58;
+    --accent: #97B067;
+    --dark: #1e4e41;
+    --warning: #839b57;
+    --background: #DCD0A8;
+    --form-bg: #FFF9E5;
+}
+
+/* User Actions Bar */
+.user-actions-bar {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.actions-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.my-bookings-btn, .admin-bookings-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.my-bookings-btn:hover, .admin-bookings-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: white;
+}
+
+/* Quick Bookings Overview */
+.quick-bookings-overview {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent);
+}
+
+.quick-bookings-overview h4 {
+    color: var(--secondary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+.bookings-list-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.mini-booking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e1e5e9;
+}
+
+.mini-booking-date {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.mini-booking-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.view-all-bookings {
+    display: block;
+    text-align: center;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.view-all-bookings:hover {
+    color: var(--dark);
+    text-decoration: underline;
+}
+
+/* Video Banner */
+.video_banner {
+    width: 100%;
+    height: 60vh;
+    position: relative;
+    overflow: hidden;
+    background: var(--dark);
+}
+
+.video_banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Study Tour Section */
+.study_tour_section {
+    padding: 50px 20px;
+    min-height: calc(100vh - 400px);
+    background-color: var(--background);
+}
+
+.study_tour_div {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--form-bg);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+#text1 {
+    color: white;
+    border: 3px solid var(--accent);
+    border-radius: 9px;
+    padding: 12px 25px;
+    width: fit-content;
+    margin: 0 auto 30px auto;
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--dark), var(--secondary));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.tour_content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.tour_main_content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.content_section {
+    margin-bottom: 40px;
+}
+
+.content_section h2 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 10px;
+}
+
+.content_section h2 i {
+    color: var(--secondary);
+}
+
+.highlight_box {
+    background-color: #f0f9f4;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    margin-top: 15px;
+}
+
+.highlight_box h3 {
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.highlight_box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.highlight_box li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.highlight_box li i {
+    color: var(--primary);
+}
+
+.itinerary {
+    margin-top: 20px;
+}
+
+.day_plan {
+    background-color: #f0f9f4;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent);
+}
+
+.day_plan h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.day_plan ul {
+    padding-left: 20px;
+}
+
+.day_plan li {
+    margin-bottom: 10px;
+}
+
+.facilities_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.facility {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f0f9f4;
+    border-radius: 5px;
+}
+
+.facility i {
+    color: var(--primary);
+}
+
+.outcomes_list {
+    padding-left: 20px;
+}
+
+.outcomes_list li {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.outcomes_list li:before {
+    content: "✓";
+    color: var(--primary);
+    font-weight: bold;
+    position: absolute;
+    left: -20px;
+}
+
+/* Booking Sidebar */
+.booking_sidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.booking_card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.price_section {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.price_original {
+    text-decoration: line-through;
+    color: #777;
+    font-size: 1.2rem;
+}
+
+.price_current {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 10px 0;
+}
+
+.discount_badge {
+    background-color: var(--primary);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.price_note {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.booking_dates {
+    margin-bottom: 20px;
+}
+
+.booking_dates h4 {
+    margin-bottom: 10px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date_select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.date_select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(41, 163, 92, 0.1);
+}
+
+.inclusions {
+    margin-bottom: 20px;
+}
+
+.inclusions h4 {
+    margin-bottom: 15px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inclusions ul {
+    list-style: none;
+}
+
+.inclusions li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.inclusions i {
+    color: var(--primary);
+}
+
+.bookbtn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--dark), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(1, 39, 6, 0.3);
+    margin-top: 10px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+
+.bookbtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(1, 39, 6, 0.4);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    color: white;
+}
+
+.bookbtn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.booking_note {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.academic_credit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f0f9f4;
+    border-radius: 5px;
+    border-left: 3px solid var(--accent);
+}
+
+.academic_credit i {
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.support_info {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.support_info h4 {
+    margin-bottom: 15px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.support_info p {
+    margin-bottom: 15px;
+    color: #777;
+}
+
+.contact_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.contact_item i {
+    color: var(--primary);
+}
+
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    position: relative;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-error, .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+}
+
+.close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .study_tour_div {
+        padding: 30px;
+        max-width: 90%;
+    }
+    
+    .video_banner {
+        height: 50vh;
+    }
+    
+    .tour_content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .booking_sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .video_banner {
+        height: 40vh;
+    }
+    
+    .study_tour_section {
+        padding: 30px 15px;
+    }
+    
+    .study_tour_div {
+        padding: 25px;
+    }
+    
+    #text1 {
+        font-size: 1.5rem;
+        padding: 10px 20px;
+        width: 90%;
+    }
+    
+    .facilities_grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+    
+    .actions-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .my-bookings-btn, .admin-bookings-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .video_banner {
+        height: 30vh;
+    }
+    
+    .study_tour_section {
+        padding: 20px 10px;
+    }
+    
+    .study_tour_div {
+        padding: 20px 15px;
+        border-radius: 10px;
+    }
+    
+    #text1 {
+        font-size: 1.3rem;
+        padding: 8px 16px;
+        width: 95%;
+    }
+    
+    .tour_main_content {
+        padding: 20px;
+    }
+    
+    .bookbtn {
+        padding: 14px;
+        font-size: 16px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tourDateSelect = document.getElementById('tourDateSelect');
+    const selectedTourDate = document.getElementById('selectedTourDate');
+    const slotsInfo = document.getElementById('slotsInfo');
+    const bookButton = document.getElementById('bookButton');
+    const bookingForm = document.getElementById('bookingForm');
+    
+    // Update slots info when date selection changes
+    function updateSlotsInfo() {
+        if (tourDateSelect && slotsInfo) {
+            const selectedOption = tourDateSelect.options[tourDateSelect.selectedIndex];
+            const slots = selectedOption.getAttribute('data-slots');
+            if (slots) {
+                slotsInfo.textContent = `${slots} slots available`;
+                if (parseInt(slots) === 0) {
+                    slotsInfo.style.color = 'red';
+                    if (bookButton) bookButton.disabled = true;
+                } else {
+                    slotsInfo.style.color = 'var(--primary)';
+                    if (bookButton) bookButton.disabled = false;
+                }
+            } else {
+                slotsInfo.textContent = '';
+            }
+            
+            // Update hidden field
+            if (selectedTourDate) {
+                selectedTourDate.value = selectedOption.value;
+            }
+        }
+    }
+    
+    if (tourDateSelect) {
+        tourDateSelect.addEventListener('change', updateSlotsInfo);
+        // Initialize on page load
+        updateSlotsInfo();
+    }
+    
+    // Form submission handling
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            const selectedOption = tourDateSelect.options[tourDateSelect.selectedIndex];
+            const slots = parseInt(selectedOption.getAttribute('data-slots'));
+            
+            if (slots === 0) {
+                e.preventDefault();
+                alert('Sorry, no slots available for this date. Please select another date.');
+                return false;
+            }
+            
+            // Add loading state
+            if (bookButton) {
+                bookButton.disabled = true;
+                bookButton.textContent = 'Booking...';
+                bookButton.style.cursor = 'wait';
+            }
+        });
+    }
+    
+    // Auto-dismiss messages after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            const closeButton = alert.querySelector('.close');
+            if (closeButton) {
+                closeButton.click();
+            } else {
+                alert.style.display = 'none';
+            }
+        });
+    }, 5000);
+    
+    // Close alert when close button is clicked
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('close')) {
+            e.target.closest('.alert').style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}
